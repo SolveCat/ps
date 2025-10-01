@@ -1,0 +1,269 @@
+/* --- RESET I PODSTAWOWY STYL --- */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: #fff;
+    height: 100vh;
+    overflow: hidden; 
+    position: relative;
+}
+
+/* --- EKRAN ŁADOWANIA (LOADER) --- */
+#loader-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+#loader-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+#loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#loader-text {
+    font-size: 1.2em;
+    margin-top: 20px;
+    height: 1.5em;
+    text-align: center;
+}
+#progress-bar-container {
+    width: 300px;
+    height: 8px;
+    background-color: #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #ffffff;
+    transition: width 0.3s ease-out;
+}
+
+
+/* --- EKRAN STARTOWY (INTRO) --- */
+#intro-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    z-index: 100;
+    opacity: 0; 
+    transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1), opacity 0.5s ease 0.5s;
+}
+body.loaded #intro-screen {
+    opacity: 1;
+}
+#intro-screen.hidden {
+    transform: translateY(-100vh);
+}
+
+/* --- LOGO STARTOWE (Z HOVEREM) --- */
+#logo-container {
+    cursor: pointer;
+    width: 150px;
+    height: 150px;
+    position: relative;
+    border-radius: 50%; /* Dodajemy, żeby cień był okrągły */
+    transition: all 0.3s ease-in-out; /* Szybsza tranzycja dla hovera */
+}
+#logo-container:hover {
+    transform: scale(1.05); /* Lekkie powiększenie */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.6); /* Delikatny cień w kolorze SolveCat */
+}
+
+#logo-svg path { fill: #fff; } ;
+#logo-svg { width: 100%; height: 100%; }
+#logo-text { display: none; }
+
+
+/* --- GŁÓWNA TREŚĆ APLIKACJI --- */
+#main-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    transform: translateY(100vh); 
+    transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1);
+    display: flex;
+    flex-direction: column; 
+}
+#main-content.visible {
+    transform: translateY(0);
+}
+
+/* --- PASEK GÓRNY (TOP BAR) --- */
+#top-bar-center {
+    width: 100%;
+    height: 60px;
+    background-color: #000;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    flex-shrink: 0; 
+}
+
+/* --- LOGO NA PASKU GÓRNYM (Z HOVEREM) --- */
+#panel-logo-container {
+    cursor: pointer;
+    position: relative;
+    width: 250px; 
+    height: 40px; 
+    transition: all 0.3s ease-in-out; /* Szybsza tranzycja dla hovera */
+}
+#panel-logo-container:hover {
+    box-shadow: 0 0 10px rgb(0, 0, 0); /* Biały cień */
+    transform: scale(1.02);
+}
+
+#panel-logo-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    font-size: 30px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    white-space: nowrap;
+    color: #fff;
+    transition: all 0.5s ease-in-out;
+}
+
+#panel-arrow-svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0); 
+    fill: #fff;
+    width: 30px; 
+    height: 30px; 
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+}
+
+/* STAN POWROTU (Morph do strzałki) */
+#panel-logo-container.returning {
+    width: 30px; 
+    height: 30px; 
+}
+#panel-logo-container.returning #panel-logo-text {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+}
+#panel-logo-container.returning #panel-arrow-svg {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* --- KONTENER APLIKACJI (MENU + IFRAME) --- */
+#app-container {
+    flex-grow: 1;
+    display: flex; 
+    overflow: hidden;
+}
+
+/* --- LEWY PANEL (MENU) --- */
+#left-panel {
+    width: 250px;
+    min-width: 250px;
+    height: 100%; 
+    background-color: #000;
+    border-right: 1px solid #333;
+    padding: 20px 0; 
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* --- PRZYCISKI (Pill buttons) --- */
+#buttons-container { 
+    width: 90%; 
+    padding: 0 10px; 
+}
+
+/* STYL DOMYŚLNY: PRZYCISKI IFRAME (SZARY) */
+.pill-button {
+    width: 100%;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 50px;
+    color: #fff;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    
+    background-color: #333;
+    border: 1px solid #555;
+}
+.pill-button:hover { 
+    background-color: #fff; 
+    color: #000; 
+    border-color: #fff;
+}
+
+/* STYL DLA NOWEJ KARTY: data-target="tab" (FIOLETOWY) */
+.pill-button[data-target="tab"] {
+    background-color: #6a0dad;
+    border: 1px solid #8a2be2;
+    color: #fff;
+}
+
+.pill-button[data-target="tab"]:hover {
+    background-color: #8a2be2;
+    color: #fff;
+    border-color: #8a2be2;
+}
+
+
+/* --- PRAWY PANEL (IFRAME) --- */
+#content-panel {
+    flex-grow: 1;
+    height: 100%;
+    background-color: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#content-iframe { 
+    width: 100%; 
+    height: 100%; 
+    border: none; 
+    filter: none;
+    transition: filter 0.5s ease;
+}
+
+/* Filtr 1: Wymuszony Kolorowy Dark Mode */
+#content-iframe.color-filter {
+    filter: invert(0.9) hue-rotate(180deg);
+}
+
+/* Filtr 2: Wymuszony Czarno-Biały Dark Mode */
+#content-iframe.grayscale-filter {
+    filter: invert(0.9) grayscale(100%);
+}
+
+#placeholder { font-size: 20px; color: #555; text-align: center; padding: 20px; }
