@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     // Czas trwania ładowania (w milisekundach)
-    const totalLoadTime = 5000; 
+    const totalLoadTime = 3500; 
 
     function startLoader() {
         let startTime = Date.now();
