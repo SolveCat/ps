@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bad Return - Proces i kategoryzacja</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        h1 {
+            color: #ffffff;
+            border-bottom: 4px solid #ffffff;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #ffffff;
+            margin-top: 30px;
+            border-bottom: 2px solid #555;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #ffffff;
+            margin-top: 20px;
+            border-left: 3px solid #555;
+            padding-left: 10px;
+        }
+        ul, ol {
+            margin-left: 20px;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+            transition: color 0.3s ease;
+        }
+        li:hover {
+            color: #808080;
+        }
+        section {
+            background-color: #111;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 1px solid #333;
+        }
+        .important {
+            border-left: 4px solid #555;
+            padding-left: 15px;
+            margin: 20px 0;
+        }
+        .highlight {
+            padding: 15px;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+            border: 1px solid #333;
+        }
+        .highlight:hover {
+            background-color: #222;
+            border-color: #444;
+        }
+        code {
+            background-color: #333;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        pre {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>BAD RETURN - Proces i kategoryzacja</h1>
+
+    <section>
+        <h2>Definicja</h2>
+        <div class="important">
+            <p>Bad Return (Nieprawidłowy zwrot) to formularz wypełniany przez Problem Solvera w przypadku wykrycia niezgodności między spodziewanym przedmiotem (znajdującym się na wygenerowanym RMA ID), a otrzymanym. Dotyczy równównież różnego typu nadużyć/pomyłek, np. śmieci w pudełku wysyłkowym, pustych pudełek czy nadmiernie zużytych lub niekompletnych produktów.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>Narzędzia</h2>
+        <div class="highlight">
+            <p>Bad Return wystawiany jest za pomocą aplikacji TRex Advanced Detection (kod w fcmenu: 1290). Dodatkowo wymagany jest dostęp do GRASS w celu weryfikacji ceny produktu.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>Wartości graniczne</h2>
+        <div class="highlight">
+            <ul>
+                <li>200€ - podstawowa wartość graniczna:
+                    <ul>
+                        <li>Przedmioty poniżej tej ceny są rozwiązywane samodzielnie przez Problem Solverów</li>
+                        <li>Przedmioty powyżej tej ceny kierowane są na Market Place (wymagany RedPhone)</li>
+                    </ul>
+                </li>
+                <li>50€ - różnica w cenie przy Switcheroo/DUSW</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>Główne kategorie Bad Return</h2>
+
+        <h3>1. Puste pudełko wysyłkowe</h3>
+        <div class="highlight">
+            <ul>
+                <li>Rozmiar niezgodny (#toosmall) - zawsze na Market Place</li>
+                <li>Rozmiar zgodny
+                    <ul>
+                        <li>&lt;200€ - Bad Return bez dodatkowych informacji</li>
+                        <li>≥200€ - Market Place + RedPhone</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <h3>2. Śmieci w pudełku wysyłkowym</h3>
+        <div class="highlight">
+            <ul>
+                <li>Rozmiar niezgodny - zawsze na Market Place</li>
+                <li>Rozmiar zgodny
+                    <ul>
+                        <li>&lt;200€ - Bad Return + Remove</li>
+                        <li>≥200€ - Market Place + RedPhone</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Pozostałe kategorie w tej samej formie -->
+    </section>
+
+    <section>
+        <h2>Proces wystawiania Bad Return</h2>
+        <div class="highlight">
+            <ol>
+                <li>Uruchom TRex Advanced Detection (1290)</li>
+                <li>Zeskanuj stanowisko</li>
+                <li>Zeskanuj LPN/RMA</li>
+                <li>Wybierz odpowiednią kategorię</li>
+                <li>Uzupełnij wymagane informacje</li>
+                <li>W przypadku przedmiotów ≥200€ wprowadź link do RedPhone lub odpowiedni kod (N/A, N/A for EU)</li>
+            </ol>
+        </div>
+    </section>
+
+    <section>
+        <h2>Przypadki szczególne</h2>
+        <div class="important">
+            <ul>
+                <li>Gwarancja - nie wystawiamy Bad Return</li>
+                <li>SYSKA alert - kierujemy na Market Place</li>
+                <li>Uszkodzone baterie - natychmiast zgłaszamy do T3/AM</li>
+                <li>Produkty powyżej 300€ - dodatkowy raport mailowy na wro1-emptybox-lp@amazon.com</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>Dodatkowe wskazówki</h2>
+        <div class="highlight">
+            <ul>
+                <li>Zawsze sprawdzaj adnotacje w GRASS przed wystawieniem Bad Return</li>
+                <li>Weryfikuj dokładnie cenę produktu</li>
+                <li>W przypadku wątpliwości konsultuj się z liderem</li>
+                <li>Pamiętaj o prawidłowym raportowaniu w Rabbit Hole</li>
+            </ul>
+        </div>
+    </section>
+
+</body>
+</html>
