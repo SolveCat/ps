@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Bad Return - Proces i kategoryzacja</title>
+    <title>Bad Return - Pełna dokumentacja</title>
     <style>
         body {
             background-color: #000000;
@@ -15,14 +15,14 @@
         }
         h1 {
             color: #ffffff;
-            border-bottom: 4px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
             padding-bottom: 10px;
             margin-bottom: 30px;
         }
         h2 {
             color: #ffffff;
             margin-top: 30px;
-            border-bottom: 2px solid #555;
+            border-bottom: 1px solid #555;
             padding-bottom: 5px;
         }
         h3 {
@@ -30,17 +30,6 @@
             margin-top: 20px;
             border-left: 3px solid #555;
             padding-left: 10px;
-        }
-        ul, ol {
-            margin-left: 20px;
-            padding-left: 20px;
-        }
-        li {
-            margin: 5px 0;
-            transition: color 0.3s ease;
-        }
-        li:hover {
-            color: #808080;
         }
         section {
             background-color: #111;
@@ -55,129 +44,339 @@
             margin: 20px 0;
         }
         .highlight {
-            padding: 15px;
             background-color: #1a1a1a;
+            padding: 15px;
             border-radius: 5px;
-            border: 1px solid #333;
+            margin: 10px 0;
         }
-        .highlight:hover {
+        .value-box {
             background-color: #222;
-            border-color: #444;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+        ul, ol {
+            margin-left: 20px;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+            transition: color 0.3s ease;
+        }
+        li:hover {
+            color: #808080;
+        }
+        .process-step {
+            background-color: #1a1a1a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #555;
         }
         code {
             background-color: #333;
             padding: 2px 5px;
             border-radius: 3px;
         }
-        pre {
-            background-color: #333;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
     </style>
 </head>
 <body>
-    <h1>BAD RETURN - Proces i kategoryzacja</h1>
+    <h1>BAD RETURN - Pełna dokumentacja</h1>
 
+    <!-- Sekcja 1: Definicja -->
     <section>
-        <h2>Definicja</h2>
+        <h2>Definicja i podstawowe informacje</h2>
         <div class="important">
-            <p>Bad Return (Nieprawidłowy zwrot) to formularz wypełniany przez Problem Solvera w przypadku wykrycia niezgodności między spodziewanym przedmiotem (znajdującym się na wygenerowanym RMA ID), a otrzymanym. Dotyczy równównież różnego typu nadużyć/pomyłek, np. śmieci w pudełku wysyłkowym, pustych pudełek czy nadmiernie zużytych lub niekompletnych produktów.</p>
+            <p>Bad Return (Nieprawidłowy zwrot) to formularz tworzony przez Problem Solvera w przypadku wykrycia potencjalnego nadużycia ze strony klienta. Dotyczy przypadków wymagających dalszej weryfikacji przez zespoły śledcze.</p>
         </div>
-    </section>
-
-    <section>
-        <h2>Narzędzia</h2>
+        
         <div class="highlight">
-            <p>Bad Return wystawiany jest za pomocą aplikacji TRex Advanced Detection (kod w fcmenu: 1290). Dodatkowo wymagany jest dostęp do GRASS w celu weryfikacji ceny produktu.</p>
-        </div>
-    </section>
-
-    <section>
-        <h2>Wartości graniczne</h2>
-        <div class="highlight">
+            <h3>Typowe sytuacje wymagające Bad Return:</h3>
             <ul>
-                <li>200€ - podstawowa wartość graniczna:
-                    <ul>
-                        <li>Przedmioty poniżej tej ceny są rozwiązywane samodzielnie przez Problem Solverów</li>
-                        <li>Przedmioty powyżej tej ceny kierowane są na Market Place (wymagany RedPhone)</li>
-                    </ul>
-                </li>
-                <li>50€ - różnica w cenie przy Switcheroo/DUSW</li>
+                <li>Puste opakowanie wysyłkowe</li>
+                <li>Przedmiot zużyty ponad akceptowalne normy</li>
+                <li>Przedmiot niekompletny</li>
+                <li>Przedmiot różniący się od zamawianego</li>
+                <li>Śmieci w opakowaniu</li>
+                <li>Podejrzenie oszustwa</li>
             </ul>
         </div>
     </section>
 
+    <!-- Sekcja 2: Narzędzia i wartości -->
     <section>
-        <h2>Główne kategorie Bad Return</h2>
-
-        <h3>1. Puste pudełko wysyłkowe</h3>
+        <h2>Narzędzia i wartości graniczne</h2>
         <div class="highlight">
+            <h3>Podstawowe narzędzia:</h3>
             <ul>
-                <li>Rozmiar niezgodny (#toosmall) - zawsze na Market Place</li>
-                <li>Rozmiar zgodny
+                <li>TRex Advanced Detection (kod fcmenu: 1290)</li>
+                <li>GRASS - weryfikacja ceny produktu</li>
+                <li>RedPhone - dokumentacja fotograficzna (Market Place)</li>
+                <li>FC Research - weryfikacja produktu</li>
+            </ul>
+        </div>
+
+        <div class="highlight">
+            <h3>Wartości graniczne:</h3>
+            <div class="value-box">200€ - podstawowy próg cenowy</div>
+            <div class="value-box">50€ - próg różnicy cenowej przy Switcheroo/DUSW</div>
+            <div class="value-box">300€ - próg dla dodatkowego raportowania mailowego</div>
+        </div>
+    </section>
+
+    <!-- Sekcja 3: Szczegółowa kategoryzacja -->
+    <section>
+        <h2>Szczegółowa kategoryzacja Bad Return</h2>
+        
+        <h3>1. Puste pudełko wysyłkowe</h3>
+        <div class="process-step">
+            <h4>A. Rozmiar niezgodny (#toosmall)</h4>
+            <ul>
+                <li>Zawsze kierowane na Market Place</li>
+                <li>Wymagany RedPhone</li>
+                <li>Pudełko do kosza na papier/górny przenośnik</li>
+            </ul>
+
+            <h4>B. Rozmiar zgodny</h4>
+            <ul>
+                <li>Poniżej 200€:
                     <ul>
-                        <li>&lt;200€ - Bad Return bez dodatkowych informacji</li>
-                        <li>≥200€ - Market Place + RedPhone</li>
+                        <li>Bad Return automatyczny</li>
+                        <li>Nie wymaga dodatkowych informacji</li>
+                        <li>Pudełko do kosza/przenośnika</li>
+                    </ul>
+                </li>
+                <li>Powyżej 200€:
+                    <ul>
+                        <li>Kierowane na Market Place</li>
+                        <li>Wymagany RedPhone</li>
+                        <li>Pudełko do kosza/przenośnika</li>
                     </ul>
                 </li>
             </ul>
         </div>
 
         <h3>2. Śmieci w pudełku wysyłkowym</h3>
-        <div class="highlight">
+        <div class="process-step">
+            <h4>A. Rozmiar niezgodny</h4>
             <ul>
-                <li>Rozmiar niezgodny - zawsze na Market Place</li>
-                <li>Rozmiar zgodny
+                <li>Zawsze na Market Place</li>
+                <li>Wymagany RedPhone</li>
+                <li>Śmieci do shuttle Remove</li>
+            </ul>
+
+            <h4>B. Rozmiar zgodny</h4>
+            <ul>
+                <li>Poniżej 200€:
                     <ul>
-                        <li>&lt;200€ - Bad Return + Remove</li>
-                        <li>≥200€ - Market Place + RedPhone</li>
+                        <li>Bad Return + opis otrzymanych śmieci</li>
+                        <li>Śmieci do shuttle Remove</li>
+                    </ul>
+                </li>
+                <li>Powyżej 200€:
+                    <ul>
+                        <li>Market Place</li>
+                        <li>RedPhone</li>
+                        <li>Śmieci do shuttle Remove</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <h3>3. Brakuje zawartości paczki z ASINem</h3>
+        <div class="process-step">
+            <h4>A. Brak głównego produktu</h4>
+            <ul>
+                <li>Poniżej 200€:
+                    <ul>
+                        <li>Bad Return + szczegółowy opis</li>
+                        <li>Remove</li>
+                    </ul>
+                </li>
+                <li>Powyżej 200€:
+                    <ul>
+                        <li>Market Place</li>
+                        <li>RedPhone</li>
+                        <li>Remove</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h4>B. Brak komponentów</h4>
+            <ul>
+                <li>Poniżej 200€:
+                    <ul>
+                        <li>Bad Return + opis brakujących elementów</li>
+                        <li>Remove</li>
+                    </ul>
+                </li>
+                <li>Powyżej 200€:
+                    <ul>
+                        <li>Market Place</li>
+                        <li>RedPhone</li>
+                        <li>Remove</li>
                     </ul>
                 </li>
             </ul>
         </div>
 
-        <!-- Pozostałe kategorie w tej samej formie -->
+        <h3>4. Inna jednostka (DUSW/DUSA)</h3>
+ >
+        <div class="process-step">
+            <h4>A. Produkt wygląda jak nowy (DUSW)</h4>
+            <ul>
+                <li>Poniżej 200€, różnica <50€:
+                    <ul>
+                        <li>Tylko Switcheroo</li>
+                    </ul>
+                </li>
+                <li>Poniżej 200€, różnica ≥50€:
+                    <ul>
+                        <li>Bad Return</li>
+                        <li>Switcheroo</li>
+                    </ul>
+                </li>
+                <li>Powyżej 200€:
+                    <ul>
+                        <li>Bad Return</li>
+                        <li>W miejscu RedPhone wpisujemy "N/A"</li>
+                        <li>Switcheroo</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h4>B. Produkt używany (DUSA)</h4>
+            <ul>
+                <li>Poniżej 200€:
+                    <ul>
+                        <li>Bad Return</li>
+                        <li>Remove</li>
+                    </ul>
+                </li>
+                <li>Powyżej 200€:
+                    <ul>
+                        <li>Market Place</li>
+                        <li>RedPhone</li>
+                        <li>Remove</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <h3>5. Niedopuszczalne użycie (BAU)</h3>
+        <div class="process-step">
+            <ul>
+                <li>Poniżej 200€:
+                    <ul>
+                        <li>Bad Return</li>
+                        <li>Crash systemowy</li>
+                    </ul>
+                </li>
+                <li>Powyżej 200€:
+                    <ul>
+                        <li>Bad Return</li>
+                        <li>"N/A for EU" w miejscu RedPhone</li>
+                        <li>Crash systemowy</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <h3>6. Przypadkowy zwrot</h3>
+        <div class="process-step">
+            <ul>
+                <li>Na innym zamówieniu:
+                    <ul>
+                        <li>Bad Return</li>
+                        <li>Proces na właściwym Order ID</li>
+                    </ul>
+                </li>
+                <li>Produkt osobisty/MFN:
+                    <ul>
+                        <li>Market Place</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </section>
 
+    <!-- Sekcja 4: Proces wystawiania -->
     <section>
         <h2>Proces wystawiania Bad Return</h2>
         <div class="highlight">
-            <ol>
-                <li>Uruchom TRex Advanced Detection (1290)</li>
+            <h3>1. Przygotowanie</h3>
+            <ul>
+                <li>Sprawdź cenę w GRASS</li>
+                <li>Zweryfikuj obecność alertu SYSKA</li>
+                <li>Sprawdź historię w Gravis</li>
+            </ul>
+
+            <h3>2. TRex Advanced Detection</h3>
+            <ul>
+                <li>Uruchom aplikację (1290)</li>
                 <li>Zeskanuj stanowisko</li>
                 <li>Zeskanuj LPN/RMA</li>
-                <li>Wybierz odpowiednią kategorię</li>
+                <li>Wybierz kategorię</li>
                 <li>Uzupełnij wymagane informacje</li>
-                <li>W przypadku przedmiotów ≥200€ wprowadź link do RedPhone lub odpowiedni kod (N/A, N/A for EU)</li>
+                <li>Dla ≥200€: RedPhone/odpowiedni kod</li>
+            </ul>
+
+            <h3>3. Finalizacja</h3>
+            <ul>
+                <li>Prawidłowe odkładanie przedmiotu</li>
+                <li>Raportowanie w Rabbit Hole</li>
+                <li>Dodatkowy raport mailowy (>300€)</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Sekcja 5: Przypadki specjalne -->
+    <section>
+        <h2>Przypadki specjalne i raportowanie</h2>
+        <div class="highlight">
+            <h3>Nie wystawiamy Bad Return dla:</h3>
+            <ul>
+                <li>Gwarancja</li>
+                <li>SYSKA alert</li>
+                <li>Alert Marketplace</li>
+                <li>Problemy z numerem seryjnym przy gwarancji</li>
+            </ul>
+
+            <h3>Specjalna procedura:</h3>
+            <ul>
+                <li>Uszkodzone baterie - natychmiast do T3/AM</li>
+                <li>Produkty >300€ - raport mailowy</li>
+                <li>Przedmioty z pamięcią - specjalna weryfikacja</li>
+            </ul>
+        </div>
+
+        <div class="highlight">
+            <h3>Raportowanie:</h3>
+            <ol>
+                <li>Rabbit Hole
+                    <ul>
+                        <li>Wybór właściwej kategorii</li>
+                        <li>Dokładny opis sytuacji</li>
+                        <li>Dodanie numerów LPN/Order ID</li>
+                    </ul>
+                </li>
+                <li>RedPhone
+                    <ul>
+                        <li>Wymagany dla MP</li>
+                        <li>Dokumentacja fotograficzna</li>
+                        <li>Odpowiednie oświetlenie</li>
+                        <li>Wszystkie uszkodzenia</li>
+                    </ul>
+                </li>
+                <li>Mail (>300€)
+                    <ul>
+                        <li>wro1-emptybox-lp@amazon.com</li>
+                        <li>LPN/RMA/Order ID</li>
+                        <li>Zdjęcie pudełka</li>
+                        <li>Tytuł: "Puste Pudełko + LPN"</li>
+                    </ul>
+                </li>
             </ol>
         </div>
     </section>
-
-    <section>
-        <h2>Przypadki szczególne</h2>
-        <div class="important">
-            <ul>
-                <li>Gwarancja - nie wystawiamy Bad Return</li>
-                <li>SYSKA alert - kierujemy na Market Place</li>
-                <li>Uszkodzone baterie - natychmiast zgłaszamy do T3/AM</li>
-                <li>Produkty powyżej 300€ - dodatkowy raport mailowy na wro1-emptybox-lp@amazon.com</li>
-            </ul>
-        </div>
-    </section>
-
-    <section>
-        <h2>Dodatkowe wskazówki</h2>
-        <div class="highlight">
-            <ul>
-                <li>Zawsze sprawdzaj adnotacje w GRASS przed wystawieniem Bad Return</li>
-                <li>Weryfikuj dokładnie cenę produktu</li>
-                <li>W przypadku wątpliwości konsultuj się z liderem</li>
-                <li>Pamiętaj o prawidłowym raportowaniu w Rabbit Hole</li>
-            </ul>
-        </div>
-    </section>
-
 </body>
 </html>
