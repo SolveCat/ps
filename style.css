@@ -196,13 +196,13 @@ body.loaded #intro-screen {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-y: auto;
 }
 
 /* --- PRZYCISKI (Pill buttons) --- */
 #buttons-container { 
     width: 90%; 
     padding: 0 10px; 
-    overflow-y: auto;
 }
 
 /* STYL DOMYŚLNY: PRZYCISKI IFRAME (SZARY) */
