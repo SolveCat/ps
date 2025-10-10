@@ -202,6 +202,7 @@ body.loaded #intro-screen {
 #buttons-container { 
     width: 90%; 
     padding: 0 10px; 
+    overflow-y: auto;
 }
 
 /* STYL DOMYŚLNY: PRZYCISKI IFRAME (SZARY) */
