@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weryfikacja specjalnych kategorii produktów</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        h1 {
+            color: #ffffff;
+            border-bottom: 2px solid #ffffff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #ffffff;
+            margin-top: 30px;
+            border-bottom: 1px solid #555;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #ffffff;
+            margin-top: 20px;
+            border-left: 3px solid #555;
+            padding-left: 10px;
+        }
+        section {
+            background-color: #111;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 1px solid #333;
+        }
+        .code-block {
+            background-color: #1a1a1a;
+            font-family: monospace;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+ ;
+            border-left: 3px solid #555;
+            white-space: pre-wrap;
+        }
+        .process-box {
+            background-color: #1a1a1a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            border-left: 4px solid #ffaa00;
+            padding-left: 15px;
+            margin: 10px 0;
+            background-color: #1a1611;
+        }
+        ul, ol {
+            margin-left: 20px;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+            transition: color 0.3s ease;
+        }
+        li:hover {
+            color: #808080;
+        }
+        .category-box {
+            border: 1px solid #333;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #1a1a1a;
+        }
+        .note {
+            font-style: italic;
+            color: #888;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weryfikacja specjalnych kategorii produktów</h1>
+
+    <!-- Wielopaki -->
+    <section>
+        <h2>Wielopaki (Multi-units)</h2>
+        <div class="category-box">
+            <h3>Definicja</h3>
+            <p>Wielopak to pojedyncze zamówienie zawierające kilka sztuk tego samego produktu lub zestaw różnych produktów.</p>
+            
+            <h3>Weryfikacja:</h3>
+            <ol>
+                <li>Sprawdź ilość w Grass/T-Rex</li>
+                <li>Zweryfikuj wszystkie otrzymane sztuki</li>
+                <li>Jeśli brakuje elementów:
+                    <div class="code-block">
+Jeśli brak >50% wartości:
+- Eskaluj na Problem Solve
+- Bad Return "brakujące części"
+
+Jeśli brak <50% wartości:
+- Procesuj standardowo
+- Zaznacz brakujące elementy</div>
+                </li>
+            </ol>
+
+            <h3>Częste problemy:</h3>
+            <ul>
+                   <li>Niezgodna ilość</li>
+                <li>Różne warianty tego samego produktu</li>
+                <li>Częściowe zwroty</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Produkty Hazmat -->
+    <section>
+        <h2>Produkty Hazmat</h2>
+        <div class="category-box">
+            <h3>Klasyfikacja poziomów:</h3>
+            <div class="process-box">
+                <ul>
+                    <li>Poziom 1: Niebezpieczne</li>
+                    <li>Poziom 2: Ograniczone</li>
+                    <li>Poziom 3: Litowe</li>
+                    <li>Poziom 4: Specjalne</li>
+                </ul>
+            </div>
+
+            <h3>Procedura weryfikacji:</h3>
+            <ol>
+                <li>Sprawdź poziom Hazmat w FC Research</li>
+                <li>Zweryfikuj stan opakowania</li>
+                <li>Sprawdź wycieki/uszkodzenia</li>
+                <li>Użyj odpowiedniego pojemnika</li>
+            </ol>
+
+            <div class="warning">
+                <h3>Sytuacje szczególne:</h3>
+                <ul>
+                    <li>Wyciek: natychmiast zabezpiecz i powiadom Safety</li>
+                    <li>Błędny poziom: skieruj na ISS</li>
+                    <li>Uszkodzone baterie: specjalna procedura utylizacji</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- RVR -->
+    <section>
+        <h2>RVR (Return to Vendor Returns)</h2>
+        <div class="category-box">
+            <h3>Kryteria klasyfikacji:</h3>
+            <ul>
+                <li>Produkty oznaczone jako "vendor-returns"</li>
+                <li>Specjalne kody ASIN</li>
+                <li>Określone kategorie produktów</li>
+            </ul>
+
+            <h3>Proces weryfikacji:</h3>
+            <ol>
+                <li>Sprawdź Eagle Eye (opcja TCDA)</li>
+                <li>Szukaj "vendor" w kolumnie Value</li>
+                <li>Jeśli znaleziono - kieruj na Vendor Returns</li>
+                <li>Dodatkowa weryfikacja w FC Research</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- FBA -->
+    <section>
+        <h2>FBA (Fulfillment By Amazon)</h2>
+        <div class="category-box">
+            <h3>Identyfikacja:</h3>
+            <ol>
+                <li>Sprawdź kody:
+                    <ul>
+                        <li>SSCC</li>
+                        <li>PO</li>
+                        <li>FBA</li>
+                        <li>AMZNCC</li>
+                    </ul>
+                </li>
+                <li>Weryfikacja stanu produktu</li>
+                <li>Sprawdź kompletność dokumentacji</li>
+            </ol>
+
+            <div class="code-block">
+Jeśli produkt FBA:
+- Posiada wymagane kody
+- Jest w stanie sprzedawalnym
+-> Kieruj na "FBA Zweryfikowane"</div>
+        </div>
+    </section>
+
+    <!-- Ogólne zasady -->
+    <section>
+        <h2>Ogólne zasady weryfikacji</h2>
+        <div class="category-box">
+            <h3>1. Kontrola dokumentacji:</h3>
+            <ul>
+                <li>RMA/Order ID</li>
+                <li>Etykiety wysyłkowe</li>
+                <li>Kody kreskowe</li>
+                <li>Plomby</li>
+            </ul>
+
+            <h3>2. Stan produktu:</h3>
+            <ul>
+                <li>Kontrola 6-stronna</li>
+                <li>Weryfikacja uszkodzeń</li>
+                <li>Sprawdzenie kompletności</li>
+                <li>Ocena opakowania</li>
+            </ul>
+
+            <h3>3. Systemy weryfikacji:</h3>
+            <div class="code-block">
+Kolejność sprawdzania:
+1. T-Rex
+2. Grass
+3. FC Research
+4. Gravis
+5. Eagle Eye</div>
+        </div>
+    </section>
+
+    <div class="note">
+        <h3>Użyte skróty:</h3>
+        <ul>
+            <li>RVR* - Return to Vendor Returns</li>
+            <li>FBA* - Fulfillment By Amazon</li>
+            <li>SWA* - Shipping With Amazon</li>
+            <li>PS* - Problem Solve</li>
+        </ul>
+        <p><em>Zawsze w przypadku wątpliwości konsultuj się z liderem lub Process Guide!</em></p>
+    </div>
+
+</body>
+</html>
