@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sytuacje specjalne na Problem Solve</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        h1 {
+            color: #ffffff;
+            border-bottom: 2px solid #ffffff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #ffffff;
+            margin-top: 30px;
+            border-bottom: 1px solid #555;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #ffffff;
+            margin-top: 20px;
+            border-left: 3px solid #555;
+            padding-left: 10px;
+        }
+        section {
+            background-color: #111;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 1px solid #333;
+        }
+        .error-box {
+            border-left: 4px solid #ff4444;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #1a1111;
+            border-radius: 3px;
+        }
+        .warning-box {
+            border-left: 4px solid #ffaa00;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #1a1611;
+            border-radius: 3px;
+        }
+        .procedure-box {
+            background-color: #1a1a1a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        ul, ol {
+            margin-left: 20px;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+            transition: color 0.3s ease;
+        }
+        li:hover {
+            color: #808080;
+        }
+        .codeode-block {
+            background-color: #1a1a1a;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+            border-left: 3px solid #555;
+        }
+        .footnote {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sytuacje specjalne na Problem Solve</h1>
+
+    <!-- Problemy z T-Rex -->
+    <section>
+        <h2>Utrata połączenia z T-Rex podczas procesowania</h2>
+        <div class="error-box">
+            <ol>
+                <li>Zrób zrzut ekranu ostatniego kroku</li>
+                <li>Zanotuj:
+                    <ul>
+                        <li>LPN</li>
+                        <li>RMA/Order ID</li>
+                        <li>Etap procesu</li>
+                    </ul>
+                </li>
+                <li>Odczekaj 5 minut</li>
+                <li>Spróbuj ponownie rozpocząć proces</li>
+                <li>Jeśli błąd się powtarza - skontaktuj się z lokalnym IT</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Problem z numerem seryjnym -->
+    <section>
+        <h2>Problem z numerem seryjnym</h2>
+        <div class="procedure-box">
+            <h3>Gdy SN nie jest dostępny:</h3>
+            <ol>
+                <li>Sprawdź czy produkt jest na gwarancji</li>
+                <li>Sprawdź w AC3 czy Sy SN jest dostępny na koncie klienta</li>
+                <li>W przypadku braku możliwości weryfikacji:
+                    <ul>
+                        <li><200€ - użyj opcji "Nie znaleziono SN"</li>
+                        <li>>200€ - skieruj na Market Place</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Niezgodności międzymagazynowe -->
+    <section>
+        <h2>Niezgodności międzymagazynowe</h2>
+        <div class="warning-box">
+            <h3>Produkt fizycznie u nas, wirtualnie w innym FC:</h3>
+            <ol>
+                <li>Sprawdź historię w FC Research</li>
+                <li>Zweryfikuj w Gravis</li>
+                <li>Użyj Sideline App do przywrócenia na nasz inwentarz</li>
+                <li class="error-box">WAŻNE: Nie przywracaj produktów bez LPN</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Problemy z vTote -->
+    <section>
+        <h2>Problemy z vTote/Wirtualnymi pojemnikami</h2>
+        <div class="procedure-box">
+            <h3>vTote z dużą ilością produktów:</h3>
+            <ol>
+                <li>Ustaw datę w FC Research na 6 miesięcy wstecz</li>
+                <li>Sprawdź każdy ASIN</li>
+                <li>Produkty z dewiacją dodatnią - usuń</li>
+                <li>Pozostałe - zmień kondycję na Pending Research</li>
+                <li>Po 21 dniach - możliwość usunięcia</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Złożone sytuacje Bad Return -->
+    <section>
+        <h2>Złożone sytuacje Bad Return</h2>
+        <div class="warning-box">
+            <h3>Wielopaczkowe oszustwo:</h3>
+            <ol>
+                <li>Zweryfikuj wszystkie paczki</li>
+                <li>Sprawdź powiązania w Grass</li>
+                <li>Wystawienie jednego BR dla wszystkich paczek</li>
+                <li>Dokładna dokumentacja w adnotacjach</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Sytuacje hazmat -->
+    <section>
+        <h2>Sytuacje hazmat</h2>
+        <div class="error-box">
+            <h3>Wyciek/uszkodzenie:</h3>
+            <ol>
+                <li>Natychmiastowe zabezpieczenie obszaru</li>
+                <li>Kontakt z Safety</li>
+                <li>Użycie odpowiedniego pojemnika bezpieczeństwa</li>
+                <li>Raport do AM</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Problemy systemowe -->
+    <section>
+        <h2>Problemy systemowe</h2>
+        <div class="warning-box">
+            <h3>Masowe błędy w T-Rex:</h3>
+            <ol>
+                <li>Zanotuj wszystkie przypadki</li>
+                <li>Skontaktuj się z IT</li>
+                <li>Użyj alternatywnych narzędzi (np. GPS)</li>
+                <li>Dokumentuj wszystkie działania</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Rzadkie przypadki -->
+    <section>
+        <h2>Rzadkie przypadki</h2>
+        <div class="procedure-box">
+            <h3>Produkty bez dokumentacji:</h3>
+            <ol>
+                <li>Sprawdź w Shipment Search</li>
+                <li>Użyj Eagle Eye dla kodów QR</li>
+                <li>Sprawdź historię w FC Research</li>
+                <li>Jeśli brak informacji:
+                    <ul>
+                        <li>Standardowy produkt - Addin</li>
+                        <li>Produkt luksusowy/drogi - Market Place</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Pytania i skróty -->
+    <div class="footnote">
+
+        <h3>Użyte skróty:</h3>
+        <ul>
+            <li>MP* - Market Place</li>
+            <li>BR* - Bad Return</li>
+            <li>SN* - Serial Number (numer seryjny)</li>
+            <li>FC* - Fulfillment Center</li>
+        </ul>
+    </div>
+
+</body>
+</html>
