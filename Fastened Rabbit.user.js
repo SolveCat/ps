@@ -17,9 +17,15 @@
 
 (function() {
     'use strict';
+    const faviconUrl = 'https://icons.iconarchive.com/icons/icons8/windows-8/512/Holidays-Easter-Rabbit-icon.png';
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    link.type = 'image/png';
+    link.href = faviconUrl;
+    document.head.appendChild(link);
 
     const UPDATE_URL = "https://raw.githubusercontent.com/SolveCat/ps/main/Fastened%20Rabbit.user.js";
-    const CHECK_INTERVAL = 10 * 60 * 1000;
+    const CHECK_INTERVAL = 10 * 60 * 100;
     const STORAGE_KEY = 'tm_last_update_check';
     const UPDATE_NEEDED_KEY = 'tm_update_needed';
 
