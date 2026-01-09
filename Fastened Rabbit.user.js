@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Fastened Rabbit
 // @namespace    fastened-rabbithole
-// @version      4
+// @version      5
 // @author       upietrzy
 // @include      /^https?:\/\/\x65\x75\x2e\x72\x61\x62\x62\x69\x74\x2d\x68\x6f\x6c\x65\x2e\x66\x63\x2e\x61\x6d\x61\x7a\x6f\x6e\x2e\x64\x65\x76\/.*$/
 // @grant        GM_setValue
@@ -9,29 +9,29 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_info
+// @noframes
 // @connect      raw.githubusercontent.com
 // @icon         https://icons.iconarchive.com/icons/icons8/windows-8/512/Holidays-Easter-Rabbit-icon.png
+// @run-at       document-start
 // ==/UserScript==
+
 (function() {
     'use strict';
 
-    // --- KONFIGURACJA ---
-    const UPDATE_URL = "https://raw.githubusercontent.com/TWOJA_NAZWA/REPO/main/skrypt.user.js";
-    const CHECK_INTERVAL = 10 * 60 * 1000; //
+    const UPDATE_URL = "https://raw.githubusercontent.com/SolveCat/ps/main/Fastened%20Rabbit.user.js";
+    const CHECK_INTERVAL = 10 * 60 * 1000;
     const STORAGE_KEY = 'tm_last_update_check';
+    const UPDATE_NEEDED_KEY = 'tm_update_needed';
 
     function checkUpdate() {
         const now = Date.now();
         const lastCheck = localStorage.getItem(STORAGE_KEY);
+        const updateNeeded = localStorage.getItem(UPDATE_NEEDED_KEY) === 'true';
 
-        // Sprawdzanie czy minęło 10 minut
-        if (lastCheck && (now - lastCheck < CHECK_INTERVAL)) {
-            const nextCheck = Math.round((CHECK_INTERVAL - (now - lastCheck)) / 1000);
-            console.log(`[Updater] Następne sprawdzenie za ${nextCheck}s.`);
+        if (!updateNeeded && lastCheck && (now - lastCheck < CHECK_INTERVAL)) {
             return;
         }
 
-        console.log("[Updater] Sprawdzanie dostępności aktualizacji na GitHub...");
         localStorage.setItem(STORAGE_KEY, now);
 
         GM_xmlhttpRequest({
@@ -43,18 +43,13 @@
                     const remoteVersion = match[1];
                     const localVersion = GM_info.script.version;
 
-                    console.log(`[Updater] Wersja lokalna: ${localVersion}, Wersja zdalna: ${remoteVersion}`);
-
                     if (isNewer(remoteVersion, localVersion)) {
-                        console.log("[Updater] Znaleziono nowszą wersję! Wyświetlam powiadomienie.");
+                        localStorage.setItem(UPDATE_NEEDED_KEY, 'true');
                         createMacOSNotification(remoteVersion);
                     } else {
-                        console.log("[Updater] Skrypt jest aktualny.");
+                        localStorage.setItem(UPDATE_NEEDED_KEY, 'false');
                     }
                 }
-            },
-            onerror: function() {
-                console.error("[Updater] Błąd podczas pobierania danych z GitHub.");
             }
         });
     }
@@ -66,108 +61,89 @@
     function createMacOSNotification(newVersion) {
         if (document.getElementById('macos-update-notify')) return;
 
-        const notify = document.createElement('div');
-        notify.id = 'macos-update-notify';
-
-        const style = document.createElement('style');
-        style.innerHTML = `
+        GM_addStyle(`
             #macos-update-notify {
                 position: fixed; top: 20px; right: 20px; width: 340px;
-                background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(20px) saturate(180%);
-                -webkit-backdrop-filter: blur(20px) saturate(180%);
-                border: 0.5px solid rgba(255, 255, 255, 0.3); border-radius: 18px;
+                background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px) saturate(180%);
+                border: 0.5px solid rgba(0,0,0,0.1); border-radius: 18px;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                padding: 12px 16px; z-index: 999999; display: flex; align-items: flex-start;
-                cursor: pointer; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-                animation: slideIn 0.5s ease-out;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                padding: 12px 16px; z-index: 1000000; display: flex; align-items: flex-start;
+                cursor: pointer; animation: slideIn 0.5s ease-out;
             }
-            #macos-update-notify:hover { transform: scale(1.02); }
             @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
-            #macos-icon {
-                width: 40px; height: 40px; background: linear-gradient(135deg, #007aff, #0051af);
-                border-radius: 10px; margin-right: 12px; display: flex; align-items: center;
-                justify-content: center; color: white; font-size: 20px; flex-shrink: 0;
-            }
-            #macos-content { flex-grow: 1; }
-            #macos-title { font-weight: 600; font-size: 14px; color: #1d1d1f; margin-bottom: 2px; }
-            #macos-desc { font-size: 13px; color: #424245; line-height: 1.4; }
-            #macos-time { font-size: 11px; color: rgba(0,0,0,0.4); float: right; }
-        `;
-        document.head.appendChild(style);
+            #macos-icon { width: 60px; height: 60px; border-radius: 10px; margin-right: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; flex-shrink: 0; }
+            #macos-title { font-weight: 600; font-size: 14px; color: #1d1d1f; }
+            #macos-desc { font-size: 13px; color: #424245; margin-top: 2px; }
+            #macos-desc2 { font-size: 13px; color: #424245; margin-top: 2px; }
+        `);
 
+        const notify = document.createElement('div');
+        notify.id = 'macos-update-notify';
         notify.innerHTML = `
-            <div id="macos-icon">🚀</div>
-            <div id="macos-content">
-                <span id="macos-time">teraz</span>
-                <div id="macos-title">Aktualizacja skryptu</div>
-                <div id="macos-desc">Wersja ${newVersion} jest dostępna. Kliknij tutaj, aby zainstalować zmiany.</div>
+            <div id="macos-icon">❗</div>
+            <div>
+                <div id="macos-title">Dostępna aktualizacja (v${newVersion})</div>
+                <div id="macos-desc">Kliknij tutaj,</div>
+                 <div id="macos-desc2">aby zainstalować nową wersję.</div>
             </div>
         `;
 
         notify.onclick = () => {
             window.location.href = UPDATE_URL;
-            notify.remove();
         };
-
-        setTimeout(() => {
-            if(notify) {
-                notify.style.transform = 'translateX(150%)';
-                setTimeout(() => notify.remove(), 300);
-            }
-        }, 15000); // 15 sekund na kliknięcie
 
         document.body.appendChild(notify);
     }
 
-    // Uruchomienie sprawdzania przy załadowaniu strony
-    checkUpdate();
-
 
     const CONFIG_URL = 'https://raw.githubusercontent.com/SolveCat/ps/refs/heads/main/configlinks.json';
     const BASE_URL = atob('aHR0cHM6Ly9ldS5yYWJiaXQtaG9sZS5mYy5hbWF6b24uZGV2');
+    const COLORS = { "NSort": "#007aff", "Sortable": "#ff9500", "TeamLift": "#ff3b30", "MarketPlace": "#af52de" };
 
-    let MENU = {};
-    let MP_LINKS = {};
-
-    const COLORS = {
-        "NSort": "#007aff",
-        "Sortable": "#ff9500",
-        "TeamLift": "#ff3b30",
-        "MarketPlace": "#af52de"
-    };
-
-    function loadConfig() {
-        return new Promise((resolve, reject) => {
-            GM_xmlhttpRequest({
-                method: "GET",
-                url: CONFIG_URL,
-                onload: function(response) {
-                    try {
-                        const config = JSON.parse(response.responseText);
-                        MENU = config.MENU;
-                        MP_LINKS = config.MP_LINKS;
-                        resolve();
-                    } catch (e) {
-                        reject(e);
-                    }
-                },
-                onerror: reject
-            });
-        });
-    }
-
-    function getFullUrl(path) {
-        return path.startsWith('http') ? path : BASE_URL + path;
-    }
+    let MENU = {}, MP_LINKS = {};
 
     const sidebar = document.createElement("div");
     sidebar.id = "rabbit-sidebar";
-    document.body.appendChild(sidebar);
-
     const panel = document.createElement("div");
     panel.id = "rabbit-panel";
-    document.body.appendChild(panel);
+
+    async function init() {
+        checkUpdate();
+        try {
+            const response = await new Promise((res, rej) =>
+                GM_xmlhttpRequest({ method: "GET", url: CONFIG_URL, onload: res, onerror: rej }));
+            const config = JSON.parse(response.responseText);
+            MENU = config.MENU;
+            MP_LINKS = config.MP_LINKS;
+            renderSidebar();
+        } catch (e) { console.error("Config error", e); }
+    }
+
+    function renderSidebar() {
+        document.body.appendChild(sidebar);
+        document.body.appendChild(panel);
+
+        const cats = { "NSort": "NS", "Sortable": "S", "TeamLift": "TL", "MarketPlace": "MP" };
+        Object.entries(cats).forEach(([key, label]) => {
+            const btn = document.createElement("div");
+            btn.className = "sidebar-btn";
+            btn.style.setProperty('--hover-color', COLORS[key]);
+            btn.textContent = label;
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                key === "MarketPlace" ? showMarketPlace() : showCategory(key);
+            };
+            sidebar.appendChild(btn);
+        });
+    }
+
+    const getFullUrl = (p) => p.startsWith('http') ? p : BASE_URL + p;
+
+    function openPanel() {
+        panel.style.display = 'flex';
+        setTimeout(() => panel.classList.add('active'), 10);
+    }
 
     function hidePanel() {
         panel.classList.remove('active');
@@ -176,36 +152,24 @@
 
     function showCategory(cat) {
         panel.innerHTML = `
-            <div class="panel-header">
-                <span class="title" style="color:${COLORS[cat]}">${cat}</span>
-                <span class="close-x">✕</span>
-            </div>
+            <div class="panel-header"><span class="title" style="color:${COLORS[cat]}">${cat}</span><span class="close-x">✕</span></div>
             <div class="panel-body">
                 ${(MENU[cat] || []).map(([name, path]) => `
-                    <div class="panel-item" onclick="window.location.href='${getFullUrl(path)}'">
-                        ${name}
-                    </div>
+                    <div class="panel-item" onclick="window.location.href='${getFullUrl(path)}'">${name}</div>
                 `).join('')}
             </div>`;
-
         panel.querySelector(".close-x").onclick = hidePanel;
         openPanel();
     }
 
     function showMarketPlace() {
         panel.innerHTML = `
-            <div class="panel-header">
-                <span class="title" style="color:${COLORS["MarketPlace"]}">MarketPlace</span>
-                <span class="close-x">✕</span>
-            </div>
+            <div class="panel-header"><span class="title" style="color:${COLORS.MarketPlace}">MarketPlace</span><span class="close-x">✕</span></div>
             <div class="panel-body">
                 ${Object.keys(MP_LINKS).map(name => `
-                    <div class="panel-item mp-main-item" data-name="${name}">
-                        ${name} <span class="arrow">❯</span>
-                    </div>
+                    <div class="panel-item mp-main-item" data-name="${name}">${name} <span class="arrow">❯</span></div>
                 `).join('')}
             </div>`;
-
         panel.querySelector(".close-x").onclick = hidePanel;
         panel.querySelectorAll(".mp-main-item").forEach(item => {
             item.onclick = () => renderTypeSelection(item.getAttribute('data-name'));
@@ -215,10 +179,7 @@
 
     function renderTypeSelection(reportName) {
         panel.innerHTML = `
-            <div class="panel-header">
-                <span class="title">Typ: ${reportName}</span>
-                <span class="close-x">✕</span>
-            </div>
+            <div class="panel-header"><span class="title">Typ: ${reportName}</span><span class="close-x">✕</span></div>
             <div class="panel-body">
                 <div class="panel-item back-btn">↩ Wstecz</div>
                 <div class="type-grid">
@@ -226,39 +187,104 @@
                     <div class="type-btn sort" onclick="window.location.href='${getFullUrl(MP_LINKS[reportName].Sort)}'">Sort</div>
                 </div>
             </div>`;
-
         panel.querySelector(".close-x").onclick = hidePanel;
         panel.querySelector(".back-btn").onclick = showMarketPlace;
     }
 
-    function openPanel() {
-        panel.style.display = 'flex';
-        setTimeout(() => panel.classList.add('active'), 10);
-    }
+    const DEBOUNCE_TIME = 10000;
+    let currentLPN = "";
 
-    loadConfig().then(() => {
-        const labels = { "NSort": "NS", "Sortable": "S", "TeamLift": "TL" };
-        Object.keys(labels).forEach(cat => {
-            const btn = document.createElement("div");
-            btn.className = "sidebar-btn";
-            btn.style.setProperty('--hover-color', COLORS[cat]);
-            btn.textContent = labels[cat];
-            btn.onclick = (e) => { e.stopPropagation(); showCategory(cat); };
-            sidebar.appendChild(btn);
-        });
+    const updateDisplay = () => {
+        const total = GM_getValue('rh_count', 0);
+        const ts = GM_getValue('rh_timestamps', []);
+        const now = Date.now();
+        const hourly = ts.filter(t => t > (now - 3600000)).length;
+        const history = GM_getValue('rh_history', []);
 
-        const mpBtn = document.createElement("div");
-        mpBtn.className = "sidebar-btn";
-        mpBtn.style.setProperty('--hover-color', COLORS["MarketPlace"]);
-        mpBtn.textContent = "MP";
-        mpBtn.onclick = (e) => { e.stopPropagation(); showMarketPlace(); };
-        sidebar.appendChild(mpBtn);
+        const totalEl = document.getElementById('rh-count-total');
+        const hourEl = document.getElementById('rh-count-hour');
+        const histEl = document.getElementById('rh-history-list');
+
+        if (totalEl) totalEl.innerText = `${hourly}/h`;
+        if (hourEl) hourEl.innerText = `Wysłane: ${total}`;
+        if (histEl) {
+
+    const secretPrefix = "aHR0cHM6Ly9ldS1jcmV0ZmMtdG9vbHMtZHViLmR1Yi5wcm94eS5hbWF6b24uY29tL2dyYXZpcy9yZXR1cm5Vbml0Lw==";
+
+    histEl.innerHTML = history.length > 0
+        ? history.map(lpn => {
+
+            const fullUrl = atob(secretPrefix) + lpn + "?selectedLocale=pl_PL";
+
+            return `<a href="${fullUrl}" target="_blank" class="history-item">• ${lpn}</a>`;
+        }).join('')
+        : '<div class="history-item" style="opacity:0.5">Brak danych</div>';
+}
+    };
+
+    const handleIncrement = () => {
+        const now = Date.now();
+        if (now - GM_getValue('rh_last_increment', 0) < DEBOUNCE_TIME) return;
+
+        GM_setValue('rh_last_increment', now);
+        GM_setValue('rh_count', GM_getValue('rh_count', 0) + 1);
+
+        let ts = GM_getValue('rh_timestamps', []);
+        ts.push(now);
+        GM_setValue('rh_timestamps', ts.filter(t => t > (now - 3600000)));
+
+        if (currentLPN) {
+            let hist = GM_getValue('rh_history', []).filter(i => i !== currentLPN);
+            hist.unshift(currentLPN);
+            GM_setValue('rh_history', hist.slice(0, 10));
+            currentLPN = "";
+        }
+        updateDisplay();
+    };
+
+function setupLPNListener() {
+    const input399 = document.getElementById('399');
+    if (!input399) return;
+
+    const _0x4a1 = "aHR0cHM6Ly9ldS1jcmV0ZmMtdG9vbHMtZHViLmR1Yi5wcm94eS5hbWF6b24uY29tL2dldFJldHVyblVuaXREYXRhP2xwbj0=";
+    const _0x4a2 = "JmxvY2FsZT1wbF9QTCZpc0F1dGhvcml6ZWRUb1ZpZXdQcmltYXJ5R3JhZGluZ0RhdGE9dHJ1ZQ==";
+
+    input399.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const lpn = input399.value.trim();
+            if (!lpn) return;
+            currentLPN = lpn;
+
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: atob(_0x4a1) + lpn + atob(_0x4a2),
+                onload: (res) => {
+                    try {
+                        const d = JSON.parse(res.responseText)[0];
+                        const oid = d?.packageAttributes?.actualPackageAttributes?.orderId;
+                        const esc = d?.socratesActivityDataList?.find(a => a.activityStatus === "ESCALATED")?.associate;
+
+                        if (oid) {
+                            const el = document.getElementById('402');
+                            if(el) {
+                                el.value = oid;
+                                el.dispatchEvent(new Event('input', {bubbles:true}));
+                            }
+                        }
+                        if (esc) {
+                            const el = document.getElementById('404');
+                            if(el) {
+                                el.value = esc;
+                                el.dispatchEvent(new Event('input', {bubbles:true}));
+                            }
+                        }
+                    } catch(err) {
+                    }
+                }
+            });
+        }
     });
-
-    document.addEventListener('mousedown', (e) => {
-        if (!panel.contains(e.target) && !sidebar.contains(e.target)) hidePanel();
-    });
-
+}
     GM_addStyle(`
         :root {
             --mac-bg: rgba(255, 255, 255, 0.9);
@@ -346,12 +372,6 @@
 
         .panel-body::-webkit-scrollbar { width: 4px; }
         .panel-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 10px; }
-    `);
-
-    const DEBOUNCE_TIME = 10000;
-    let currentLPN = "";
-
-    GM_addStyle(`
         #rh-mini-counter {
             position: fixed; bottom: 25px; right: 25px;
             background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
@@ -362,6 +382,8 @@
             transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             display: flex; flex-direction: column; gap: 4px;
             overflow: hidden; max-height: 52px; width: 175px;
+            max-height: 35px;
+
         }
         #rh-mini-counter:hover {
             max-height: 420px; width: 220px;
@@ -392,143 +414,36 @@
             padding-left: 12px;
         }
     `);
-
-    const commitHistory = () => {
-        if (!currentLPN) return;
-        let history = GM_getValue('rh_history', []);
-        history = history.filter(item => item !== currentLPN);
-        history.unshift(currentLPN);
-        history = history.slice(0, 10);
-        GM_setValue('rh_history', history);
-        currentLPN = "";
-        updateDisplay();
-    };
-
-    const addTimestamp = () => {
-        let ts = GM_getValue('rh_timestamps', []);
-        const now = Date.now();
-        ts.push(now);
-        ts = ts.filter(t => t > (now - 3600000));
-        GM_setValue('rh_timestamps', ts);
-    };
-
-    const getHourlyCount = () => {
-        const ts = GM_getValue('rh_timestamps', []);
-        const limit = Date.now() - 3600000;
-        return ts.filter(t => t > limit).length;
-    };
-
-    const canIncrement = () => {
-        const now = Date.now();
-        const last = GM_getValue('rh_last_increment', 0);
-        return (now - last >= DEBOUNCE_TIME);
-    };
-
-    const initCounter = () => {
-        if (document.getElementById('rh-mini-counter')) return;
-        const div = document.createElement('div');
-        div.id = 'rh-mini-counter';
-        div.innerHTML = `
-            <div class="main-line"><span class="dot"></span><span id="rh-count-total">Wysłane: 0</span></div>
-            <div class="hour-line" id="rh-count-hour">Godzina: 0</div>
-            <div class="history-section">
-                <div class="history-title">Ostatnie 10 raportow:</div>
-                <div id="rh-history-list"></div>
-            </div>
-        `;
-        div.ondblclick = (e) => {
-            e.stopPropagation();
-            if(confirm("Resetuj licznik?")) {
-                GM_setValue('rh_count', 0); GM_setValue('rh_timestamps', []);
-                GM_setValue('rh_history', []); GM_setValue('rh_last_increment', 0);
-                updateDisplay();
-            }
-        };
-        document.documentElement.appendChild(div);
-        updateDisplay();
-        setInterval(updateDisplay, 30000);
-    };
-
-    const updateDisplay = () => {
-        const total = GM_getValue('rh_count', 0);
-        const hourly = getHourlyCount();
-        const history = GM_getValue('rh_history', []);
-        const totalEl = document.getElementById('rh-count-total');
-        const hourEl = document.getElementById('rh-count-hour');
-        const histEl = document.getElementById('rh-history-list');
-        if (totalEl) totalEl.innerText = `${hourly}/h`;
-        if (hourEl) hourEl.innerText = `Wysłane: ${total}`;
-        if (histEl) {
-            histEl.innerHTML = history.length > 0
-                ? history.map(lpn => {
-                    const url = `https://eu-cretfc-tools-dub.dub.proxy.amazon.com/gravis/returnUnit/${lpn}?selectedLocale=pl_PL`;
-                    return `<a href="${url}" target="_blank" class="history-item">• ${lpn}</a>`;
-                }).join('')
-                : '<div class="history-item" style="opacity:0.5; pointer-events:none;">Brak danych</div>';
-        }
-    };
-
-    const handleLPN = () => {
-        const input399 = document.getElementById('399');
-        if (!input399) return;
-        input399.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const lpn = input399.value.trim();
-                if (lpn) currentLPN = lpn;
-                GM_xmlhttpRequest({
-                    method: "GET",
-                    url: `https://eu-cretfc-tools-dub.dub.proxy.amazon.com/getReturnUnitData?lpn=${lpn}&locale=pl_PL&isAuthorizedToViewPrimaryGradingData=true`,
-                    headers: {
-                        "Cookie": `amzn_sso_rfp="9f20aec6a48cf12b"; amzn_sso_token="eyJ4NXUiOiJodHRwOlwvXC9zZW50cnktcGtpLmFtYXpvbi5jb21cL3B1YmxpY2tleVwvMjc0NDAwNDkiLCJ0eXAiOiJKV1MiLCJhbGciOiJQUzI1NiJ9.eyJzdWIiOiJ1cGlldHJ6eUBBTlQuQU1BWk9OLkNPTSIsImF1ZCI6WyJodHRwczpcL1wvZXUtY3JldGZjLXRvb2xzLWR1Yi5kdWIucHJveHkuYW1hem9uLmNvbTo0NDMiXSwiYWNyIjoia2VyYmVyb3MiLCJhbXIiOlsicHdkIl0sImlzcyI6InNlbnRyeS5hbWF6b24uY29tIiwiZXhwIjoxNzY3OTI2MzI4LCJpYXQiOjE3Njc4OTAzMjgsIm5vbmNlIjoxNDYjk2ZjdlMmRkODljZTQzMjVlMmQwYjkyNDg5OGE1ZTY0YzM0MGExZDQ1ZWU2OWYwODRlYTQ1NjRiY2UzNyJ9.Bi8ifu-bho0C9q5v9EB79Xiy9VXjTmZUTWi8WIFUHsy1g2wvQagfw4ZY5cDzaWv_qdP6eU2kbjPRJnAP4Ekxlb4goxGe5iRivd8urI9nBJSkg2ZfwlZtq-fStbxkh5lNQsPcGpBjmAXXzyY-Qj2-y1Kqf_rJhHakAx0Q4JNUprUO0RG43LRGqlRdQkm0FR1B8zBMWXyhL-BLhad_hBYgO3u0N1wjw-wKo1tOjU9Bqk6amEpXbgzR61txtZA3xLf03SuioZGBmRn5UNU_FBe2lYdGCWjBjDrD1nuibNnPyitwDpCKm0JVhtsI-6PkO-oThcXFsgYQjXUgfKZ9Cgy9CA"; JSESSIONID="F1EBC3A9FA93ED64A6BF34CFC4AB4A7A"; program-cookie="FC_MENU_INTERNAL"`,
-                        "Accept": "application/json"
-                    },
-                    onload: (res) => {
-                        try {
-                            const d = JSON.parse(res.responseText)[0];
-                            const oid = d?.packageAttributes?.actualPackageAttributes?.orderId;
-                            const esc = d?.socratesActivityDataList?.find(a => a.activityStatus === "ESCALATED")?.associate;
-                            if (oid) fill(402, oid);
-                            if (esc) fill(404, esc);
-                        } catch(e) {}
-                    }
-                });
-            }
-        });
-    };
-
-    const fill = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) { el.value = val; el.dispatchEvent(new Event('input', {bubbles:true})); }
-    };
-
-    const triggerIncr = (url) => {
-        if (url.includes('/result') && canIncrement()) {
-            GM_setValue('rh_last_increment', Date.now());
-            GM_setValue('rh_count', GM_getValue('rh_count', 0) + 1);
-            addTimestamp();
-            commitHistory();
-            updateDisplay();
-        }
-    };
-
-    const rawSend = XMLHttpRequest.prototype.send;
+    const originalSend = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function() {
         this.addEventListener('load', () => {
-            if (this.status >= 200 && this.status < 400) triggerIncr(this.responseURL || '');
+            if (this.responseURL?.includes('/result') && this.status < 400) handleIncrement();
         });
-        return rawSend.apply(this, arguments);
+        return originalSend.apply(this, arguments);
     };
 
     window.addEventListener('submit', (e) => {
-        if (e.target.action?.includes('/result') && canIncrement()) {
-            GM_setValue('rh_last_increment', Date.now());
-            GM_setValue('rh_count', GM_getValue('rh_count', 0) + 1);
-            addTimestamp();
-            commitHistory();
-        }
+        if (e.target.action?.includes('/result')) handleIncrement();
     }, true);
 
-    document.addEventListener('DOMContentLoaded', () => { initCounter(); handleLPN(); });
-    setTimeout(() => { initCounter(); handleLPN(); }, 1500);
+    document.addEventListener('mousedown', (e) => {
+        if (panel.classList.contains('active') && !panel.contains(e.target) && !sidebar.contains(e.target)) hidePanel();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        init();
+        setupLPNListener();
+        const div = document.createElement('div');
+        div.id = 'rh-mini-counter';
+        div.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px; font-weight:bold"><span style="width:8px; height:8px; background:#00b894; border-radius:50%"></span><span id="rh-count-total">0/h</span></div>
+            <div id="rh-count-hour" style="font-size:11px; margin: 4px 0 10px 16px">Wysłane: 0</div>
+            <div style="border-top:1px solid #eee; padding-top:10px">
+                <div style="font-size:10px; font-weight:900; opacity:0.5; margin-bottom:5px">OSTATNIE RAPORTY:</div>
+                <div id="rh-history-list"></div>
+            </div>`;
+        document.body.appendChild(div);
+        updateDisplay();
+    });
 
 })();
