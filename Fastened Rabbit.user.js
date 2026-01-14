@@ -15,7 +15,7 @@
 // @run-at       document-start
 // ==/UserScript==
 
-// zmiana sposobu zapisu wersji
+// zmiana sposobu zapisu wersji (rok, miesiac, dzien, build)
 // naprawa cookies
 
 (function() {
