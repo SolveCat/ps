@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Fastened Rabbit
 // @namespace    fastened-rabbithole
-// @version      26.1.14.4
+// @version      26.1.14.5
 // @author       upietrzy
 // @include      /^https?:\/\/\x65\x75\x2e\x72\x61\x62\x62\x69\x74\x2d\x68\x6f\x6c\x65\x2e\x66\x63\x2e\x61\x6d\x61\x7a\x6f\x6e\x2e\x64\x65\x76\/.*$/
 // @grant        GM_setValue
@@ -74,6 +74,41 @@
         if (document.getElementById('macos-update-notify')) return;
 
         GM_addStyle(`
+        /* Styl Loadera */
+#rh-loader {
+    position: fixed;
+    top: 20px;
+    right: 80px; /* Obok przycisku powiadomień */
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 8px 15px;
+    display: none; /* Ukryty domyślnie */
+    align-items: center;
+    gap: 10px;
+    z-index: 1000001;
+    box-shadow: var(--glass-shadow);
+    font-family: var(--font-stack);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-color);
+    animation: slideInDown 0.4s ease;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--separator-color);
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
             #macos-update-notify {
                 position: fixed; top: 20px; right: 20px; width: 340px;
                 background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px) saturate(180%);
@@ -121,6 +156,10 @@
     panel.id = "rabbit-panel";
 
     async function init() {
+const loader = document.createElement("div");
+loader.id = "rh-loader";
+loader.innerHTML = `<div class="rh-spinner"></div><span>Uzupełnianie danych...</span>`;
+document.body.appendChild(loader);
         checkUpdate();
         try {
             const response = await new Promise((res, rej) =>
@@ -135,6 +174,7 @@
     function renderSidebar() {
         document.body.appendChild(sidebar);
         document.body.appendChild(panel);
+ 
 
         const cats = { "NSort": "NS", "Sortable": "S", "TeamLift": "TL", "MarketPlace": "MP" };
         Object.entries(cats).forEach(([key, label]) => {
@@ -256,6 +296,7 @@
 
 function setupLPNListener() {
     const input399 = document.getElementById('399');
+    const loaderEl = document.getElementById('rh-loader'); // Szukamy stworzonego wyżej loadera
     if (!input399) return;
 
     const _0x4a1 = "aHR0cHM6Ly9ldS1jcmV0ZmMtdG9vbHMtZHViLmR1Yi5wcm94eS5hbWF6b24uY29tL2dldFJldHVyblVuaXREYXRhP2xwbj0=";
@@ -267,66 +308,56 @@ function setupLPNListener() {
             if (!lpn) return;
             currentLPN = lpn;
 
+            // --- POKAŻ LOADER ---
+            if (loaderEl) loaderEl.style.display = 'flex';
+
             GM_xmlhttpRequest({
                 method: "GET",
                 url: atob(_0x4a1) + lpn + atob(_0x4a2),
-                withCredentials: true, // <--- KLUCZOWE: Używa ciasteczek zalogowanego użytkownika
-            headers: {
-                "Accept": "application/json, text/plain, */*",
-                "Content-Type": "application/json"
-            },
+                withCredentials: true,
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
                 onload: (res) => {
-                // Sprawdzenie czy sesja użytkownika jest aktywna
-                if (res.status === 401 || res.status === 403) {
-                    console.error("Brak dostępu! Użytkownik nie jest zalogowany do narzędzi CRETFC.");
-                    // Opcjonalnie: Wyświetl powiadomienie na ekranie
-                    alert("Błąd autoryzacji Amazon! Otwórz narzędzie CRETFC w nowej karcie, aby odświeżyć sesję.");
-                    return;
-                }
+                    // --- SCHOWAJ LOADER ---
+                    if (loaderEl) loaderEl.style.display = 'none';
 
-                try {
-                    const data = JSON.parse(res.responseText);
-
-                    // Zabezpieczenie na wypadek pustej odpowiedzi
-                    if (!data || !data[0]) {
-                        console.log("Nie znaleziono danych dla tego LPN.");
+                    if (res.status === 401 || res.status === 403) {
+                        alert("Błąd autoryzacji Amazon! Odśwież sesję CRETFC.");
                         return;
                     }
 
-                    const d = data[0];
-                    const oid = d?.packageAttributes?.actualPackageAttributes?.orderId;
-                    const esc = d?.socratesActivityDataList?.find(a => a.activityStatus === "ESCALATED")?.associate;
+                    try {
+                        const data = JSON.parse(res.responseText);
+                        if (!data || !data[0]) return;
 
-                    console.log("Znaleziono - OrderID:", oid, "EscalatedBy:", esc);
+                        const d = data[0];
+                        const oid = d?.packageAttributes?.actualPackageAttributes?.orderId;
+                        const esc = d?.socratesActivityDataList?.find(a => a.activityStatus === "ESCALATED")?.associate;
 
-                    // Wypełnianie Order ID (pole 402)
-                    if (oid) {
-                        const el = document.getElementById('402');
-                        if (el) {
-                            el.value = oid;
-                            el.dispatchEvent(new Event('input', { bubbles: true }));
-                            el.dispatchEvent(new Event('change', { bubbles: true })); // Czasem wymagane dodatkowo
+                        if (oid) {
+                            const el = document.getElementById('402');
+                            if (el) {
+                                el.value = oid;
+                                el.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
                         }
-                    }
 
-                    // Wypełnianie loginu pracownika (pole 404)
-                    if (esc) {
-                        const el = document.getElementById('404');
-                        if (el) {
-                            el.value = esc;
-                            el.dispatchEvent(new Event('input', { bubbles: true }));
-                            el.dispatchEvent(new Event('change', { bubbles: true }));
+                        if (esc) {
+                            const el = document.getElementById('404');
+                            if (el) {
+                                el.value = esc;
+                                el.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
                         }
-                    }
-
-                } catch (err) {
-                    console.error("Błąd przetwarzania danych:", err);
+                    } catch (err) { console.error(err); }
+                },
+                onerror: () => {
+                    // --- SCHOWAJ LOADER PRZY BŁĘDZIE ---
+                    if (loaderEl) loaderEl.style.display = 'none';
                 }
-            },
-            onerror: (err) => {
-                console.error("Błąd połączenia sieciowego:", err);
-            }
-        });
+            });
         }
     });
 }
@@ -334,6 +365,39 @@ function setupLPNListener() {
     // --- STYLE CSS (ZINTEGROWANE: UI Remastered + Fastened Rabbit + Themes) ---
     GM_addStyle(`
     /* --- GŁÓWNY PANEL (Wymuszenie motywu) --- */
+    #rh-loader {
+    position: fixed;
+    top: 10%;
+    right: 25px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 10px 18px;
+    display: none; /* Ukryty startowo */
+    align-items: center;
+    gap: 12px;
+    z-index: 9999999;
+    box-shadow: var(--glass-shadow);
+    font-family: var(--font-stack);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.rh-spinner {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--separator-color);
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: rh-spin 0.8s linear infinite;
+}
+
+@keyframes rh-spin {
+    to { transform: rotate(360deg); }
+}
 .default_panel {
     background: var(--panel-bg) !important;
     backdrop-filter: blur(30px) !important;
