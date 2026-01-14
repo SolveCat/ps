@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Fastened Rabbit
 // @namespace    fastened-rabbithole
-// @version      6
+// @version      26.1.14.1
 // @author       upietrzy
 // @include      /^https?:\/\/\x65\x75\x2e\x72\x61\x62\x62\x69\x74\x2d\x68\x6f\x6c\x65\x2e\x66\x63\x2e\x61\x6d\x61\x7a\x6f\x6e\x2e\x64\x65\x76\/.*$/
 // @grant        GM_setValue
@@ -264,31 +264,63 @@ function setupLPNListener() {
             GM_xmlhttpRequest({
                 method: "GET",
                 url: atob(_0x4a1) + lpn + atob(_0x4a2),
-                withCredentials: true,
+                withCredentials: true, // <--- KLUCZOWE: Używa ciasteczek zalogowanego użytkownika
+            headers: {
+                "Accept": "application/json, text/plain, */*",
+                "Content-Type": "application/json"
+            },
                 onload: (res) => {
-                    try {
-                        const d = JSON.parse(res.responseText)[0];
-                        const oid = d?.packageAttributes?.actualPackageAttributes?.orderId;
-                        const esc = d?.socratesActivityDataList?.find(a => a.activityStatus === "ESCALATED")?.associate;
-
-                        if (oid) {
-                            const el = document.getElementById('402');
-                            if(el) {
-                                el.value = oid;
-                                el.dispatchEvent(new Event('input', {bubbles:true}));
-                            }
-                        }
-                        if (esc) {
-                            const el = document.getElementById('404');
-                            if(el) {
-                                el.value = esc;
-                                el.dispatchEvent(new Event('input', {bubbles:true}));
-                            }
-                        }
-                    } catch(err) {
-                    }
+                // Sprawdzenie czy sesja użytkownika jest aktywna
+                if (res.status === 401 || res.status === 403) {
+                    console.error("Brak dostępu! Użytkownik nie jest zalogowany do narzędzi CRETFC.");
+                    // Opcjonalnie: Wyświetl powiadomienie na ekranie
+                    alert("Błąd autoryzacji Amazon! Otwórz narzędzie CRETFC w nowej karcie, aby odświeżyć sesję.");
+                    return;
                 }
-            });
+
+                try {
+                    const data = JSON.parse(res.responseText);
+
+                    // Zabezpieczenie na wypadek pustej odpowiedzi
+                    if (!data || !data[0]) {
+                        console.log("Nie znaleziono danych dla tego LPN.");
+                        return;
+                    }
+
+                    const d = data[0];
+                    const oid = d?.packageAttributes?.actualPackageAttributes?.orderId;
+                    const esc = d?.socratesActivityDataList?.find(a => a.activityStatus === "ESCALATED")?.associate;
+
+                    console.log("Znaleziono - OrderID:", oid, "EscalatedBy:", esc);
+
+                    // Wypełnianie Order ID (pole 402)
+                    if (oid) {
+                        const el = document.getElementById('402');
+                        if (el) {
+                            el.value = oid;
+                            el.dispatchEvent(new Event('input', { bubbles: true }));
+                            el.dispatchEvent(new Event('change', { bubbles: true })); // Czasem wymagane dodatkowo
+                        }
+                    }
+
+                    // Wypełnianie loginu pracownika (pole 404)
+                    if (esc) {
+                        const el = document.getElementById('404');
+                        if (el) {
+                            el.value = esc;
+                            el.dispatchEvent(new Event('input', { bubbles: true }));
+                            el.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                    }
+
+                } catch (err) {
+                    console.error("Błąd przetwarzania danych:", err);
+                }
+            },
+            onerror: (err) => {
+                console.error("Błąd połączenia sieciowego:", err);
+            }
+        });
         }
     });
 }
