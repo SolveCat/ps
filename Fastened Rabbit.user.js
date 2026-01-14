@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Fastened Rabbit
 // @namespace    fastened-rabbithole
-// @version      5
+// @version      6
 // @author       upietrzy
 // @include      /^https?:\/\/\x65\x75\x2e\x72\x61\x62\x62\x69\x74\x2d\x68\x6f\x6c\x65\x2e\x66\x63\x2e\x61\x6d\x61\x7a\x6f\x6e\x2e\x64\x65\x76\/.*$/
 // @grant        GM_setValue
@@ -264,6 +264,7 @@ function setupLPNListener() {
             GM_xmlhttpRequest({
                 method: "GET",
                 url: atob(_0x4a1) + lpn + atob(_0x4a2),
+                withCredentials: true,
                 onload: (res) => {
                     try {
                         const d = JSON.parse(res.responseText)[0];
