@@ -15,6 +15,9 @@
 // @run-at       document-start
 // ==/UserScript==
 
+// zmiana sposobu zapisu wersji
+// naprawa cookies
+
 (function() {
     'use strict';
     const faviconUrl = 'https://icons.iconarchive.com/icons/icons8/windows-8/512/Holidays-Easter-Rabbit-icon.png';
