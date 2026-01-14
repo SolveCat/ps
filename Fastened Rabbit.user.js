@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Fastened Rabbit
 // @namespace    fastened-rabbithole
-// @version      26.1.14.1
+// @version      26.1.14.2
 // @author       upietrzy
 // @include      /^https?:\/\/\x65\x75\x2e\x72\x61\x62\x62\x69\x74\x2d\x68\x6f\x6c\x65\x2e\x66\x63\x2e\x61\x6d\x61\x7a\x6f\x6e\x2e\x64\x65\x76\/.*$/
 // @grant        GM_setValue
@@ -9,6 +9,7 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_info
+// @connect      *
 // @noframes
 // @connect      raw.githubusercontent.com
 // @icon         https://icons.iconarchive.com/icons/icons8/windows-8/512/Holidays-Easter-Rabbit-icon.png
