@@ -2,15 +2,14 @@
   "MENU": {
     "NSort": [
       ["Odnaleziono RMA w systemie", "/result?category_id=430&function_id=234&group_id=669&task_id=4520"],
-      ["Badreturn (< 200€)", "/task?category_id=430&function_id=234&group_id=674"],
-      ["Badreturn BAU", "/result?category_id=430&function_id=234&group_id=674&task_id=4554"],
+      ["Badreturn", "/task?category_id=430&function_id=234&group_id=674"],
+      ["BAU", "/result?category_id=430&function_id=234&group_id=674&task_id=4554"],
       ["Switcheroo / Overage", "/result?category_id=430&function_id=234&group_id=670&task_id=4522"],
       ["Advanced Detection Sideline", "/result?category_id=430&function_id=234&group_id=675&task_id=4566"],
       ["Błąd w procesie aplikacji (quip)", "/result?category_id=430&function_id=234&group_id=671&task_id=4527"],
       ["Skierowano przedmiot na Misship", "/result?category_id=586&function_id=243&group_id=911&task_id=5970"],
       ["Skierowano przedmiot na ISS", "/task?category_id=430&function_id=234&group_id=673"],
-      ["Skierowano przedmio na MarketPlace", "/result?category_id=430&function_id=234&group_id=673&task_id=4547"],
-      ["Marketplace – Red Phone", "/category?function_id=238"],
+      ["Red Phone", "/category?function_id=238"],
       ["Skierowano przedmiot na Marketplace", "/result?category_id=430&function_id=234&group_id=673&task_id=4547"],
       ["Skierowano przedmiot na Pamięć", "/result?category_id=430&function_id=234&group_id=675&task_id=4568"],
       ["Fałszywa eskalacja", "/task?category_id=430&function_id=234&group_id=675"],
@@ -20,15 +19,14 @@
     ],
     "Sortable": [
       ["Odnaleziono RMA w systemie", "/result?category_id=430&function_id=233&group_id=669&task_id=4520"],
-      ["Badreturn (< 200€)", "/task?category_id=430&function_id=233&group_id=674"],
+      ["Badreturn", "/task?category_id=430&function_id=233&group_id=674"],
       ["Badreturn BAU", "/result?category_id=430&function_id=233&group_id=674&task_id=4554"],
       ["Switcheroo / Overage", "/result?category_id=430&function_id=233&group_id=670&task_id=4522"],
       ["Advanced Detection Sideline", "/result?category_id=430&function_id=233&group_id=675&task_id=4566"],
       ["Błąd w procesie aplikacji (quip)", "/result?category_id=430&function_id=233&group_id=671&task_id=4527"],
       ["Skierowano przedmiot na Misship", "/result?category_id=586&function_id=243&group_id=911&task_id=5970"],
       ["Skierowano przedmiot na ISS", "/task?category_id=430&function_id=233&group_id=673"],
-      ["Skierowano przedmio na MarketPlace", "/result?category_id=399&function_id=233&group_id=610&task_id=4064"],
-      ["Marketplace – Red Phone", "/category?function_id=237"],
+      ["Red Phone", "/category?function_id=237"],
       ["Skierowano przedmiot na Marketplace", "/result?category_id=430&function_id=233&group_id=673&task_id=4547"],
       ["Skierowano przedmiot na Pamięć", "/result?category_id=430&function_id=233&group_id=675&task_id=4568"],
       ["Fałszywa eskalacja", "/task?category_id=430&function_id=233&group_id=675"],
@@ -38,14 +36,14 @@
     ],
     "TeamLift": [
       ["Odnaleziono RMA w systemie", "/result?category_id=434&function_id=234&group_id=669&task_id=4520"],
-      ["Badreturn (< 200€)", "/task?category_id=434&function_id=234&group_id=674"],
+      ["Badreturn", "/task?category_id=434&function_id=234&group_id=674"],
       ["Badreturn BAU", "/result?category_id=434&function_id=234&group_id=674&task_id=4554"],
       ["Switcheroo / Overage", "/result?category_id=434&function_id=234&group_id=670&task_id=4522"],
       ["Advanced Detection Sideline", "/result?category_id=434&function_id=234&group_id=675&task_id=4566"],
       ["Błąd w procesie aplikacji (quip)", "/result?category_id=434&function_id=234&group_id=671&task_id=4527"],
       ["Skierowano przedmiot na Misship", "/result?category_id=586&function_id=243&group_id=911&task_id=5970"],
       ["Skierowano przedmiot na ISS", "/task?category_id=434&function_id=234&group_id=673"],
-      ["Marketplace – Red Phone", "/category?function_id=238"],
+      ["Red Phone", "/category?function_id=238"],
       ["Skierowano przedmiot na Marketplace", "/result?category_id=434&function_id=234&group_id=673&task_id=4547"],
       ["Skierowano przedmiot na Pamięć", "/result?category_id=434&function_id=234&group_id=675&task_id=4568"],
       ["Fałszywa eskalacja", "/task?category_id=434&function_id=234&group_id=675"],
@@ -56,36 +54,28 @@
   },
   "MP_LINKS": {
     "Czysty Marketplace": { 
-      "NS": "/task?category_id=576&function_id=242&group_id=896", 
-      "Sort": "/task?category_id=575&function_id=242&group_id=896" 
+      "NS": "/result?category_id=576&function_id=242&group_id=896&task_id=5878", 
+      "Sort": "/result?category_id=576&function_id=242&group_id=896&task_id=5878" 
     },
-    "SYSKA/Personal item": { 
-      "NS": "/task?category_id=576&function_id=242&group_id=896", 
-      "Sort": "/task?category_id=575&function_id=242&group_id=896" 
+    "Czysty Marketplace MFN - znalezione na innym/powiązanym koncie": { 
+      "NS": "/result?category_id=576&function_id=242&group_id=896&task_id=5879", 
+      "Sort": "/result?category_id=575&function_id=242&group_id=896&task_id=5879" 
     },
-    "Zweryfikowano RMA": { 
-      "NS": "/result?category_id=430&function_id=234&group_id=669&task_id=4519", 
-      "Sort": "/result?category_id=430&function_id=233&group_id=669&task_id=4519" 
+    "Przedmiot osobisty (Syska)": { 
+      "NS": "/result?category_id=576&function_id=242&group_id=896&task_id=5880", 
+      "Sort": "/result?category_id=575&function_id=242&group_id=896&task_id=5880" 
     },
-    "Znaleziono RMA na koncie": { 
-      "NS": "/task?category_id=430&function_id=234&group_id=674", 
-      "Sort": "/task?category_id=430&function_id=233&group_id=674" 
+    "Niedostarczony marketplace - likwidacja": { 
+      "NS": "/result?category_id=576&function_id=242&group_id=896&task_id=5881", 
+      "Sort": "/result?category_id=575&function_id=242&group_id=896&task_id=5881" 
     },
-    "Badreturn (< 200€)": { 
-      "NS": "/task?category_id=430&function_id=234&group_id=674", 
-      "Sort": "/task?category_id=430&function_id=233&group_id=674" 
+    "Recover - uszkodzony rynek (ryzyko bezpieczeństwa)": { 
+      "NS": "/result?category_id=576&function_id=242&group_id=896&task_id=5882", 
+      "Sort": "/result?category_id=575&function_id=242&group_id=896&task_id=5882" 
     },
-    "Badreturn (BAU)": { 
-      "NS": "/task?category_id=430&function_id=234&group_id=674", 
-      "Sort": "/task?category_id=430&function_id=233&group_id=674" 
-    },
-    "Badreturn (> 200€)": { 
-      "NS": "/task?category_id=430&function_id=234&group_id=674", 
-      "Sort": "/task?category_id=430&function_id=233&group_id=674" 
-    },
-    "Switcheroo/Overage": { 
-      "NS": "/result?category_id=430&function_id=234&group_id=674&task_id=4557", 
-      "Sort": "/result?category_id=430&function_id=233&group_id=674&task_id=4557" 
+    "Dokument eksportowy": { 
+      "NS": "/result?category_id=576&function_id=242&group_id=896&task_id=5883", 
+      "Sort": "/result?category_id=575&function_id=242&group_id=896&task_id=5883" 
     },
     "Fałszywa eskalacja MP": { 
       "NS": "/task?category_id=576&function_id=242&group_id=898", 
