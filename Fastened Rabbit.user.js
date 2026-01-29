@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Fastened Rabbit
 // @namespace    fastened-rabbithole
-// @version      26.1.14.5
+// @version      26.1.29.01
 // @author       upietrzy
 // @include      /^https?:\/\/\x65\x75\x2e\x72\x61\x62\x62\x69\x74\x2d\x68\x6f\x6c\x65\x2e\x66\x63\x2e\x61\x6d\x61\x7a\x6f\x6e\x2e\x64\x65\x76\/.*$/
 // @grant        GM_setValue
@@ -11,6 +11,7 @@
 // @grant        GM_info
 // @connect      *
 // @noframes
+// @grant        unsafeWindow
 // @connect      raw.githubusercontent.com
 // @icon         https://icons.iconarchive.com/icons/icons8/windows-8/512/Holidays-Easter-Rabbit-icon.png
 // @run-at       document-start
@@ -23,348 +24,90 @@
 
 (function() {
     'use strict';
-    const faviconUrl = 'https://icons.iconarchive.com/icons/icons8/windows-8/512/Holidays-Easter-Rabbit-icon.png';
-    const link = document.createElement('link');
-    link.rel = 'icon';
-    link.type = 'image/png';
-    link.href = faviconUrl;
-    document.head.appendChild(link);
-
-    const UPDATE_URL = "https://raw.githubusercontent.com/SolveCat/ps/main/Fastened%20Rabbit.user.js";
-    const CHECK_INTERVAL = 10 * 60 * 100;
-    const STORAGE_KEY = 'tm_last_update_check';
-    const UPDATE_NEEDED_KEY = 'tm_update_needed';
-
-    function checkUpdate() {
-        const now = Date.now();
-        const lastCheck = localStorage.getItem(STORAGE_KEY);
-        const updateNeeded = localStorage.getItem(UPDATE_NEEDED_KEY) === 'true';
-
-        if (!updateNeeded && lastCheck && (now - lastCheck < CHECK_INTERVAL)) {
-            return;
-        }
-
-        localStorage.setItem(STORAGE_KEY, now);
-
-        GM_xmlhttpRequest({
-            method: "GET",
-            url: UPDATE_URL,
-            onload: function(response) {
-                const match = response.responseText.match(/\/\/ @version\s+([\d.]+)/);
-                if (match) {
-                    const remoteVersion = match[1];
-                    const localVersion = GM_info.script.version;
-
-                    if (isNewer(remoteVersion, localVersion)) {
-                        localStorage.setItem(UPDATE_NEEDED_KEY, 'true');
-                        createMacOSNotification(remoteVersion);
-                    } else {
-                        localStorage.setItem(UPDATE_NEEDED_KEY, 'false');
-                    }
-                }
-            }
-        });
-    }
-
-    function isNewer(remote, local) {
-        return remote.localeCompare(local, undefined, { numeric: true, sensitivity: 'base' }) > 0;
-    }
-
-    function createMacOSNotification(newVersion) {
-        if (document.getElementById('macos-update-notify')) return;
-
-        GM_addStyle(`
-        /* Styl Loadera */
-#rh-loader {
-    position: fixed;
-    top: 20px;
-    right: 80px; /* Obok przycisku powiadomień */
-    background: var(--glass-bg);
-    backdrop-filter: blur(15px);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 8px 15px;
-    display: none; /* Ukryty domyślnie */
-    align-items: center;
-    gap: 10px;
-    z-index: 1000001;
-    box-shadow: var(--glass-shadow);
-    font-family: var(--font-stack);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--primary-color);
-    animation: slideInDown 0.4s ease;
-}
-
-.spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--separator-color);
-    border-top: 2px solid var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-            #macos-update-notify {
-                position: fixed; top: 20px; right: 20px; width: 340px;
-                background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px) saturate(180%);
-                border: 0.5px solid rgba(0,0,0,0.1); border-radius: 18px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-                padding: 12px 16px; z-index: 1000000; display: flex; align-items: flex-start;
-                cursor: pointer; animation: slideIn 0.5s ease-out;
-            }
-            @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
-            #macos-icon { width: 60px; height: 60px; border-radius: 10px; margin-right: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; flex-shrink: 0; }
-            #macos-title { font-weight: 600; font-size: 14px; color: #1d1d1f; }
-            #macos-desc { font-size: 13px; color: #424245; margin-top: 2px; }
-            #macos-desc2 { font-size: 13px; color: #424245; margin-top: 2px; }
-        `);
-
-        const notify = document.createElement('div');
-        notify.id = 'macos-update-notify';
-        notify.innerHTML = `
-            <div id="macos-icon">❗</div>
-            <div>
-                <div id="macos-title">Dostępna aktualizacja (v${newVersion})</div>
-                <div id="macos-desc">Kliknij tutaj,</div>
-                 <div id="macos-desc2">aby zainstalować nową wersję.</div>
-            </div>
-        `;
-
-        notify.onclick = () => {
-            window.location.href = UPDATE_URL;
-        };
-
-        document.body.appendChild(notify);
-    }
-
-
-    const CONFIG_URL = 'https://raw.githubusercontent.com/SolveCat/ps/refs/heads/main/configlinks.json';
-    const BASE_URL = atob('aHR0cHM6Ly9ldS5yYWJiaXQtaG9sZS5mYy5hbWF6b24uZGV2');
-    const COLORS = { "NSort": "#007aff", "Sortable": "#ff9500", "TeamLift": "#ff3b30", "MarketPlace": "#af52de" };
-
-    let MENU = {}, MP_LINKS = {};
-
-    const sidebar = document.createElement("div");
-    sidebar.id = "rabbit-sidebar";
-    const panel = document.createElement("div");
-    panel.id = "rabbit-panel";
-
-    async function init() {
-const loader = document.createElement("div");
-loader.id = "rh-loader";
-loader.innerHTML = `<div class="rh-spinner"></div><span>Uzupełnianie danych...</span>`;
-document.body.appendChild(loader);
-        checkUpdate();
-        try {
-            const response = await new Promise((res, rej) =>
-                GM_xmlhttpRequest({ method: "GET", url: CONFIG_URL, onload: res, onerror: rej }));
-            const config = JSON.parse(response.responseText);
-            MENU = config.MENU;
-            MP_LINKS = config.MP_LINKS;
-            renderSidebar();
-        } catch (e) { console.error("Config error", e); }
-    }
-
-    function renderSidebar() {
-        document.body.appendChild(sidebar);
-        document.body.appendChild(panel);
- 
-
-        const cats = { "NSort": "NS", "Sortable": "S", "TeamLift": "TL", "MarketPlace": "MP" };
-        Object.entries(cats).forEach(([key, label]) => {
-            const btn = document.createElement("div");
-            btn.className = "sidebar-btn";
-            btn.style.setProperty('--hover-color', COLORS[key]);
-            btn.textContent = label;
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                key === "MarketPlace" ? showMarketPlace() : showCategory(key);
-            };
-            sidebar.appendChild(btn);
-        });
-    }
-
-    const getFullUrl = (p) => p.startsWith('http') ? p : BASE_URL + p;
-
-    function openPanel() {
-        panel.style.display = 'flex';
-        setTimeout(() => panel.classList.add('active'), 10);
-    }
-
-    function hidePanel() {
-        panel.classList.remove('active');
-        setTimeout(() => { if(!panel.classList.contains('active')) panel.style.display = 'none'; }, 300);
-    }
-
-    function showCategory(cat) {
-        panel.innerHTML = `
-            <div class="panel-header"><span class="title" style="color:${COLORS[cat]}">${cat}</span><span class="close-x">✕</span></div>
-            <div class="panel-body">
-                ${(MENU[cat] || []).map(([name, path]) => `
-                    <div class="panel-item" onclick="window.location.href='${getFullUrl(path)}'">${name}</div>
-                `).join('')}
-            </div>`;
-        panel.querySelector(".close-x").onclick = hidePanel;
-        openPanel();
-    }
-
-    function showMarketPlace() {
-        panel.innerHTML = `
-            <div class="panel-header"><span class="title" style="color:${COLORS.MarketPlace}">MarketPlace</span><span class="close-x">✕</span></div>
-            <div class="panel-body">
-                ${Object.keys(MP_LINKS).map(name => `
-                    <div class="panel-item mp-main-item" data-name="${name}">${name} <span class="arrow">❯</span></div>
-                `).join('')}
-            </div>`;
-        panel.querySelector(".close-x").onclick = hidePanel;
-        panel.querySelectorAll(".mp-main-item").forEach(item => {
-            item.onclick = () => renderTypeSelection(item.getAttribute('data-name'));
-        });
-        openPanel();
-    }
-
-    function renderTypeSelection(reportName) {
-        panel.innerHTML = `
-            <div class="panel-header"><span class="title">Typ: ${reportName}</span><span class="close-x">✕</span></div>
-            <div class="panel-body">
-                <div class="panel-item back-btn">↩ Wstecz</div>
-                <div class="type-grid">
-                    <div class="type-btn ns" onclick="window.location.href='${getFullUrl(MP_LINKS[reportName].NS)}'">NS</div>
-                    <div class="type-btn sort" onclick="window.location.href='${getFullUrl(MP_LINKS[reportName].Sort)}'">Sort</div>
-                </div>
-            </div>`;
-        panel.querySelector(".close-x").onclick = hidePanel;
-        panel.querySelector(".back-btn").onclick = showMarketPlace;
-    }
-
-    const DEBOUNCE_TIME = 10000;
-    let currentLPN = "";
-
-    const updateDisplay = () => {
-        const total = GM_getValue('rh_count', 0);
-        const ts = GM_getValue('rh_timestamps', []);
-        const now = Date.now();
-        const hourly = ts.filter(t => t > (now - 3600000)).length;
-        const history = GM_getValue('rh_history', []);
-
-        const totalEl = document.getElementById('rh-count-total');
-        const hourEl = document.getElementById('rh-count-hour');
-        const histEl = document.getElementById('rh-history-list');
-
-        if (totalEl) totalEl.innerText = `${hourly}/h`;
-        if (hourEl) hourEl.innerText = `Wysłane: ${total}`;
-        if (histEl) {
-
-    const secretPrefix = "aHR0cHM6Ly9ldS1jcmV0ZmMtdG9vbHMtZHViLmR1Yi5wcm94eS5hbWF6b24uY29tL2dyYXZpcy9yZXR1cm5Vbml0Lw==";
-
-    histEl.innerHTML = history.length > 0
-        ? history.map(lpn => {
-
-            const fullUrl = atob(secretPrefix) + lpn + "?selectedLocale=pl_PL";
-
-            return `<a href="${fullUrl}" target="_blank" class="history-item">• ${lpn}</a>`;
-        }).join('')
-        : '<div class="history-item" style="opacity:0.5">Brak danych</div>';
-}
-    };
-
-    const handleIncrement = () => {
-        const now = Date.now();
-        if (now - GM_getValue('rh_last_increment', 0) < DEBOUNCE_TIME) return;
-
-        GM_setValue('rh_last_increment', now);
-        GM_setValue('rh_count', GM_getValue('rh_count', 0) + 1);
-
-        let ts = GM_getValue('rh_timestamps', []);
-        ts.push(now);
-        GM_setValue('rh_timestamps', ts.filter(t => t > (now - 3600000)));
-
-        if (currentLPN) {
-            let hist = GM_getValue('rh_history', []).filter(i => i !== currentLPN);
-            hist.unshift(currentLPN);
-            GM_setValue('rh_history', hist.slice(0, 10));
-            currentLPN = "";
-        }
-        updateDisplay();
-    };
-
-function setupLPNListener() {
-    const input399 = document.getElementById('399');
-    const loaderEl = document.getElementById('rh-loader'); // Szukamy stworzonego wyżej loadera
-    if (!input399) return;
-
-    const _0x4a1 = "aHR0cHM6Ly9ldS1jcmV0ZmMtdG9vbHMtZHViLmR1Yi5wcm94eS5hbWF6b24uY29tL2dldFJldHVyblVuaXREYXRhP2xwbj0=";
-    const _0x4a2 = "JmxvY2FsZT1wbF9QTCZpc0F1dGhvcml6ZWRUb1ZpZXdQcmltYXJ5R3JhZGluZ0RhdGE9dHJ1ZQ==";
-
-    input399.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const lpn = input399.value.trim();
-            if (!lpn) return;
-            currentLPN = lpn;
-
-            // --- POKAŻ LOADER ---
-            if (loaderEl) loaderEl.style.display = 'flex';
-
-            GM_xmlhttpRequest({
-                method: "GET",
-                url: atob(_0x4a1) + lpn + atob(_0x4a2),
-                withCredentials: true,
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                },
-                onload: (res) => {
-                    // --- SCHOWAJ LOADER ---
-                    if (loaderEl) loaderEl.style.display = 'none';
-
-                    if (res.status === 401 || res.status === 403) {
-                        alert("Błąd autoryzacji Amazon! Odśwież sesję CRETFC.");
-                        return;
-                    }
-
-                    try {
-                        const data = JSON.parse(res.responseText);
-                        if (!data || !data[0]) return;
-
-                        const d = data[0];
-                        const oid = d?.packageAttributes?.actualPackageAttributes?.orderId;
-                        const esc = d?.socratesActivityDataList?.find(a => a.activityStatus === "ESCALATED")?.associate;
-
-                        if (oid) {
-                            const el = document.getElementById('402');
-                            if (el) {
-                                el.value = oid;
-                                el.dispatchEvent(new Event('input', { bubbles: true }));
-                            }
-                        }
-
-                        if (esc) {
-                            const el = document.getElementById('404');
-                            if (el) {
-                                el.value = esc;
-                                el.dispatchEvent(new Event('input', { bubbles: true }));
-                            }
-                        }
-                    } catch (err) { console.error(err); }
-                },
-                onerror: () => {
-                    // --- SCHOWAJ LOADER PRZY BŁĘDZIE ---
-                    if (loaderEl) loaderEl.style.display = 'none';
-                }
-            });
-        }
-    });
-}
-    // --- STYLE CSS (Zaktualizowane o modal i przycisk) ---
-    // --- STYLE CSS (ZINTEGROWANE: UI Remastered + Fastened Rabbit + Themes) ---
     GM_addStyle(`
-    /* --- GŁÓWNY PANEL (Wymuszenie motywu) --- */
+    /* Wyśrodkowany tytuł w panelu */
+.panel-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 15px;
+    background: rgba(0,0,0,0.03);
+    border-bottom: 1px solid var(--separator-color);
+}
+
+.panel-header .title {
+    font-weight: 800;
+    text-transform: uppercase;
+    text-align: center;
+    width: 100%;
+}
+
+.close-x {
+    position: absolute;
+    right: 15px;
+}
+
+/* Wyśrodkowane separatory z liniami */
+.panel-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    padding: 20px 16px 10px 16px;
+    font-size: 10px;
+    font-weight: 900;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.panel-separator::before, .panel-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--separator-color);
+}
+.panel-separator::before { margin-right: 15px; }
+.panel-separator::after { margin-left: 15px; }
+
+/* Przyciski plomby */
+.seal-grid { display: flex; flex-direction: column; gap: 10px; padding: 15px; }
+.seal-btn {
+    padding: 16px;
+    border-radius: 14px;
+    text-align: center;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid var(--separator-color);
+    background: var(--input-bg);
+    color: var(--text-main);
+}
+.seal-btn.green:hover { background: #34c759; color: white; border-color: #34c759; }
+.seal-btn.orange:hover { background: #ff9500; color: white; border-color: #ff9500; }
+.seal-btn.red:hover { background: #ff3b30; color: white; border-color: #ff3b30; }
+    #rabbit-sidebar-header-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding-right: 4px; /* Kompensacja bliskości krawędzi */
+    pointer-events: none;
+}
+
+
+#rabbit-sidebar-header {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--primary-color);
+    letter-spacing: 1px;
+    box-shadow: var(--glass-shadow);
+    white-space: nowrap; /* Zapobiega łamaniu tekstu */
+}
     #rh-loader {
     position: fixed;
     top: 10%;
@@ -594,26 +337,41 @@ textarea {
 
         /* Prawy pasek z ikonami (NS, S, TL...) */
         #rabbit-sidebar {
-            position: fixed; right: 12px; top: 50%; transform: translateY(-50%);
-            z-index: 100000; display: flex; flex-direction: column; gap: 10px;
-        }
+    position: fixed;
+    right: 0; /* Przyklejamy do samej krawędzi */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end; /* Przyciski równają do prawej */
+    width: 60px; /* Stała szerokość kontenera zapobiega drganiom nagłówka */
+}
 
         .sidebar-btn {
-            background-color: var(--input-bg); color: var(--text-main);
-            width: 44px; height: 44px; display: flex;
-            align-items: center; justify-content: center; cursor: pointer;
-            border-radius: 14px; font-weight: 600; font-family: var(--font-stack);
-            font-size: 13px; border: 1px solid var(--separator-color);
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            position: relative; overflow: hidden;
-        }
+    background: var(--input-bg);
+    color: var(--text-main);
+    width: 50px; /* Szerokość bazowa */
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 12px 0 0 12px;
+    font-weight: 800;
+    border: 1px solid var(--separator-color);
+    border-right: none;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: -2px 4px 10px rgba(0,0,0,0.1);
+}
 
         .sidebar-btn:hover {
-            background-color: var(--hover-color);
-            color: white; transform: scale(1.1) translateX(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: transparent;
-        }
+    background: var(--hover-color);
+    color: white;
+    width: 80px; /* Przycisk rośnie w lewo */
+    transform: translateX(0); /* Zostaje na krawędzi, rośnie w głąb ekranu */
+}
 
         /* Prawy Panel Rozwijany */
         #rabbit-panel {
@@ -630,17 +388,38 @@ textarea {
         #rabbit-panel.active { opacity: 1; transform: translateY(-50%) scale(1); }
 
         .panel-header {
-            padding: 8px; display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid var(--separator-color); color: var(--text-main);
-        }
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centrowanie tytułu */
+    position: relative; /* Potrzebne do pozycjonowania przycisku zamknięcia */
+    border-bottom: 1px solid var(--separator-color);
+    background: rgba(0, 0, 0, 0.02); /* Delikatne wyróżnienie tła nagłówka */
+}
 
         .close-x {
-            font-size: 16px; color: var(--text-secondary); cursor: pointer; transition: color 0.2s;
-            padding: 5px; line-height: 1;
-        }
-        .close-x:hover { color: var(--danger-color); }
+    position: absolute;
+    right: 15px;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
 
-        .title { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
+.close-x:hover {
+    color: var(--danger-color);
+    transform: scale(1.2);
+}
+
+        .panel-header .title {
+    font-weight: 800; /* Extra Bold */
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    flex: 1; /* Zajmuje całą dostępną przestrzeń, by być na środku */
+}
         .panel-body { overflow-y: auto; }
 
         .panel-item {
@@ -971,6 +750,693 @@ input[type="submit"]:hover {
         @keyframes slideInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     `);
 
+    const faviconUrl = 'https://icons.iconarchive.com/icons/icons8/windows-8/512/Holidays-Easter-Rabbit-icon.png';
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    link.type = 'image/png';
+    link.href = faviconUrl;
+    document.head.appendChild(link);
+
+    const UPDATE_URL = "https://raw.githubusercontent.com/SolveCat/ps/main/Fastened%20Rabbit.user.js";
+    const CHECK_INTERVAL = 10 * 60 * 100;
+    const STORAGE_KEY = 'tm_last_update_check';
+    const log = (msg, type = 'info') => {
+        const styles = {
+            info: 'color: #007aff; font-weight: bold;',
+            success: 'color: #34c759; font-weight: bold;',
+            error: 'background: #ff3b30; color: white; padding: 1px 4px; border-radius: 3px;',
+            warn: 'color: #ff9500; font-weight: bold;'
+        };
+        const consoleMethod = type === 'error' ? 'error' : (type === 'warn' ? 'warn' : 'log');
+        console[consoleMethod](`%c[Fastened Rabbit] %c${msg}`, styles.info, styles[type] || '');
+    };
+
+    log("Krolik przyspieszony!", "success");
+    const UPDATE_NEEDED_KEY = 'tm_update_needed';
+
+    function checkUpdate() {
+        const now = Date.now();
+        const lastCheck = localStorage.getItem(STORAGE_KEY);
+        const updateNeeded = localStorage.getItem(UPDATE_NEEDED_KEY) === 'true';
+
+        if (!updateNeeded && lastCheck && (now - lastCheck < CHECK_INTERVAL)) {
+            return;
+        }
+
+        localStorage.setItem(STORAGE_KEY, now);
+
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: UPDATE_URL,
+            onload: function(response) {
+                const match = response.responseText.match(/\/\/ @version\s+([\d.]+)/);
+                if (match) {
+                    const remoteVersion = match[1];
+                    const localVersion = GM_info.script.version;
+
+                    if (isNewer(remoteVersion, localVersion)) {
+                        localStorage.setItem(UPDATE_NEEDED_KEY, 'true');
+                        createMacOSNotification(remoteVersion);
+                    } else {
+                        localStorage.setItem(UPDATE_NEEDED_KEY, 'false');
+                    }
+                }
+            }
+        });
+    }
+
+    function isNewer(remote, local) {
+        return remote.localeCompare(local, undefined, { numeric: true, sensitivity: 'base' }) > 0;
+    }
+
+    function createMacOSNotification(newVersion) {
+        if (document.getElementById('macos-update-notify')) return;
+
+        GM_addStyle(`
+        /* Styl Loadera */
+#rh-loader {
+    position: fixed;
+    top: 20px;
+    right: 80px; /* Obok przycisku powiadomień */
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 8px 15px;
+    display: none; /* Ukryty domyślnie */
+    align-items: center;
+    gap: 10px;
+    z-index: 1000001;
+    box-shadow: var(--glass-shadow);
+    font-family: var(--font-stack);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-color);
+    animation: slideInDown 0.4s ease;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--separator-color);
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+            #macos-update-notify {
+                position: fixed; top: 20px; right: 20px; width: 340px;
+                background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px) saturate(180%);
+                border: 0.5px solid rgba(0,0,0,0.1); border-radius: 18px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                padding: 12px 16px; z-index: 1000000; display: flex; align-items: flex-start;
+                cursor: pointer; animation: slideIn 0.5s ease-out;
+            }
+            @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
+            #macos-icon { width: 60px; height: 60px; border-radius: 10px; margin-right: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; flex-shrink: 0; }
+            #macos-title { font-weight: 600; font-size: 14px; color: #1d1d1f; }
+            #macos-desc { font-size: 13px; color: #424245; margin-top: 2px; }
+            #macos-desc2 { font-size: 13px; color: #424245; margin-top: 2px; }
+        `);
+
+        const notify = document.createElement('div');
+        notify.id = 'macos-update-notify';
+        notify.innerHTML = `
+            <div id="macos-icon">❗</div>
+            <div>
+                <div id="macos-title">Dostępna aktualizacja (v${newVersion})</div>
+                <div id="macos-desc">Kliknij tutaj,</div>
+                 <div id="macos-desc2">aby zainstalować nową wersję.</div>
+            </div>
+        `;
+
+        notify.onclick = () => {
+            window.location.href = UPDATE_URL;
+        };
+
+        document.body.appendChild(notify);
+    }
+
+
+    const CONFIG_URL = 'https://raw.githubusercontent.com/SolveCat/ps/refs/heads/main/configlinks.json';
+    const BASE_URL = atob('aHR0cHM6Ly9ldS5yYWJiaXQtaG9sZS5mYy5hbWF6b24uZGV2');
+    const COLORS = { "NonSort": "#007aff", "Sortable": "#ff9500", "TeamLift": "#ff3b30", "MarketPlace": "#af52de" };
+const RED_PHONE_LINKS = {
+    "NS": {
+        "Nienaruszona": "/result?category_id=522&function_id=238&group_id=826&task_id=5514",
+        "Uszkodzona": "/result?category_id=502&function_id=238&group_id=791&task_id=5367",
+        "Nieobecna": "/result?category_id=524&function_id=238&group_id=826&task_id=5514"
+    },
+    "Sort": {
+        "Nienaruszona": "/result?category_id=501&function_id=237&group_id=791&task_id=5367",
+        "Uszkodzona": "/result?category_id=502&function_id=237&group_id=791&task_id=5367",
+        "Nieobecna": "/result?category_id=524&function_id=237&group_id=826&task_id=5514"
+    }
+};
+    // Funkcja pomocnicza do bezpiecznego przypisywania do okna strony
+const exportToWindow = (name, fn) => {
+    if (typeof unsafeWindow !== 'undefined') {
+        unsafeWindow[name] = fn;
+    }
+    window[name] = fn;
+};
+
+// --- REJESTRACJA FUNKCJI W KONTEKŚCIE STRONY ---
+exportToWindow('renderRedPhoneFlow', function() {
+    if (!panel) return;
+    panel.innerHTML = `
+        <div class="panel-header"><span class="title">Wybierz Proces</span><span class="close-x">✕</span></div>
+        <div class="panel-body">
+            <div class="panel-item back-btn" onclick="location.reload()">↩ Anuluj</div>
+            <div class="type-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding:10px;">
+                <div class="type-btn ns" style="padding:20px; text-align:center; background:var(--input-bg); border-radius:12px; cursor:pointer; font-weight:800; color:#007aff; border:1px solid var(--separator-color);" onclick="renderRedPhoneFlow_Step2('NS')">NS</div>
+                <div class="type-btn sort" style="padding:20px; text-align:center; background:var(--input-bg); border-radius:12px; cursor:pointer; font-weight:800; color:#ff9500; border:1px solid var(--separator-color);" onclick="renderRedPhoneFlow_Step2('Sort')">Sort</div>
+            </div>
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+    openPanel();
+});
+
+exportToWindow('renderRedPhoneFlow_Step2', function(type) {
+    if (!panel) return;
+    panel.innerHTML = `
+        <div class="panel-header"><span class="title">Fabryczna? (${type})</span><span class="close-x">✕</span></div>
+        <div class="panel-body">
+            <div class="panel-item back-btn" onclick="renderRedPhoneFlow()">↩ Wstecz</div>
+            <div class="seal-grid">
+                <div class="seal-btn green" onclick="window.location.href='${getFullUrl(RED_PHONE_LINKS[type]['Nienaruszona'])}'">Nienaruszona</div>
+                <div class="seal-btn orange" onclick="window.location.href='${getFullUrl(RED_PHONE_LINKS[type]['Uszkodzona'])}'">Uszkodzona</div>
+                <div class="seal-btn red" onclick="window.location.href='${getFullUrl(RED_PHONE_LINKS[type]['Nieobecna'])}'">Nie jest obecna</div>
+            </div>
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+});
+    let MENU = {}, MP_LINKS = {};
+
+    const sidebar = document.createElement("div");
+    sidebar.id = "rabbit-sidebar";
+    const panel = document.createElement("div");
+    panel.id = "rabbit-panel";
+
+    let isInitialized = false;
+// Pomocnik do eksportu funkcji
+const exportFn = (name, fn) => {
+    if (typeof unsafeWindow !== 'undefined') unsafeWindow[name] = fn;
+    window[name] = fn;
+};
+
+// --- WYBÓR TYPU DLA ZWYKŁYCH LINKÓW MP (NS/SORT) ---
+exportFn('renderTypeSelection', function(reportName) {
+    const links = MP_LINKS[reportName];
+    if (!links) return;
+    panel.innerHTML = `
+        <div class="panel-header"><span class="title">${reportName}</span><span class="close-x">✕</span></div>
+        <div class="panel-body">
+            <div class="panel-item back-btn" onclick="showMarketPlace()">↩ Wstecz</div>
+            <div class="type-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding:10px;">
+                <div class="type-btn" style="padding:20px; text-align:center; background:var(--input-bg); border-radius:12px; cursor:pointer; font-weight:800; color:#007aff; border:1px solid var(--separator-color);" onclick="window.location.href='${getFullUrl(links.NS)}'">NS</div>
+                <div class="type-btn" style="padding:20px; text-align:center; background:var(--input-bg); border-radius:12px; cursor:pointer; font-weight:800; color:#ff9500; border:1px solid var(--separator-color);" onclick="window.location.href='${getFullUrl(links.Sort)}'">Sort</div>
+            </div>
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+});
+
+// --- WYBÓR PLOMBY (KROK FINALNY) ---
+exportFn('renderRedPhoneFlow_Step2', function(type) {
+    panel.innerHTML = `
+        <div class="panel-header"><span class="title">Fabryczna? (${type})</span><span class="close-x">✕</span></div>
+        <div class="panel-body">
+            <div class="panel-item back-btn" onclick="location.reload()">↩ Anuluj</div>
+            <div class="seal-grid">
+                <div class="seal-btn green" onclick="window.location.href='${getFullUrl(RED_PHONE_LINKS[type]['Nienaruszona'])}'">Nienaruszona</div>
+                <div class="seal-btn orange" onclick="window.location.href='${getFullUrl(RED_PHONE_LINKS[type]['Uszkodzona'])}'">Uszkodzona</div>
+                <div class="seal-btn red" onclick="window.location.href='${getFullUrl(RED_PHONE_LINKS[type]['Nieobecna'])}'">Nie jest obecne</div>
+            </div>
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+});
+
+// --- WYBÓR PROCESU DLA MP RED PHONE ---
+exportFn('renderRedPhoneFlow', function() {
+    panel.innerHTML = `
+        <div class="panel-header"><span class="title">Wybierz Proces</span><span class="close-x">✕</span></div>
+        <div class="panel-body">
+            <div class="panel-item back-btn" onclick="showMarketPlace()">↩ Wstecz</div>
+            <div class="type-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding:10px;">
+                <div class="type-btn" style="padding:20px; text-align:center; background:var(--input-bg); border-radius:12px; cursor:pointer; font-weight:800; color:#007aff; border:1px solid var(--separator-color);" onclick="renderRedPhoneFlow_Step2('NS')">NS</div>
+                <div class="type-btn" style="padding:20px; text-align:center; background:var(--input-bg); border-radius:12px; cursor:pointer; font-weight:800; color:#ff9500; border:1px solid var(--separator-color);" onclick="renderRedPhoneFlow_Step2('Sort')">Sort</div>
+            </div>
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+});
+
+// --- GŁÓWNE MENU KATEGORII ---
+exportFn('showCategory', function(cat) {
+    const items = MENU[cat] || [];
+    panel.innerHTML = `
+        <div class="panel-header"><span class="title" style="color:${COLORS[cat]}">${cat}</span><span class="close-x">✕</span></div>
+        <div class="panel-body">
+            ${items.map(([name, path]) => {
+                if (name === "SEP") return `<div class="panel-separator">${path}</div>`;
+                const isRedPhone = name.toLowerCase().includes("red phone");
+                let action;
+                if (isRedPhone) {
+                    const type = (cat === "NSort" || cat === "TeamLift") ? "NS" : "Sort";
+                    action = `renderRedPhoneFlow_Step2('${type}')`;
+                } else {
+                    action = `window.location.href='${getFullUrl(path)}'`;
+                }
+                return `<div class="panel-item" onclick="${action}">${name} ${isRedPhone ? '<span class="arrow">❯</span>' : ''}</div>`;
+            }).join('')}
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+    openPanel();
+});
+
+// --- MENU MARKETPLACE ---
+exportFn('showMarketPlace', function() {
+    panel.innerHTML = `
+        <div class="panel-header"><span class="title" style="color:${COLORS.MarketPlace}">MarketPlace</span><span class="close-x">✕</span></div>
+        <div class="panel-body">
+            ${Object.keys(MP_LINKS).map(name => {
+                const isRedPhone = name.toLowerCase().includes("red phone");
+                const action = isRedPhone ? `renderRedPhoneFlow()` : `renderTypeSelection('${name}')`;
+                return `<div class="panel-item" onclick="${action}">${name} <span class="arrow">❯</span></div>`;
+            }).join('')}
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+    openPanel();
+});
+async function init() {
+
+    if (isInitialized) return;
+    isInitialized = true;
+
+    log("Inicjalizacja systemu Fastened Rabbit...", 'info');
+
+    // 1. Loader UI
+    const loader = document.createElement("div");
+    loader.id = "rh-loader";
+    loader.innerHTML = `<div class="rh-spinner"></div><span>Pobieranie danych...</span>`;
+    document.body.appendChild(loader);
+
+    if (typeof restorePageFromCache === 'function') {
+        restorePageFromCache();
+    }
+
+    checkUpdate();
+
+    try {
+        const response = await new Promise((res, rej) =>
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: CONFIG_URL,
+                onload: res,
+                onerror: rej,
+                timeout: 5000 // Timeout, żeby nie blokować UI przy problemach z GitHubem
+            })
+        );
+
+        const config = JSON.parse(response.responseText);
+        MENU = config.MENU;
+        MP_LINKS = config.MP_LINKS;
+
+        log("Konfiguracja załadowana pomyślnie!", 'success');
+        renderSidebar();
+
+    } catch (e) {
+        log("Błąd ładowania configlinks.json (korzystam z pustego menu): " + e, 'error');
+        renderSidebar();
+    }
+    const fastObserver = new MutationObserver(() => {
+        if (typeof nukeOriginalStyles === 'function') nukeOriginalStyles();
+        if (typeof cleanHeaderTitle === 'function') cleanHeaderTitle();
+    });
+
+    fastObserver.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+
+    document.addEventListener('change', (e) => {
+        if (['399', '402', '404'].includes(e.target.id)) {
+            if (typeof saveCurrentPageToCache === 'function') {
+                saveCurrentPageToCache();
+            }
+        }
+    });
+
+    log("System gotowy do pracy.", "success");
+}
+    function renderSidebar() {
+        // Tworzymy kontener nagłówka, jeśli nie istnieje
+        if (!document.getElementById("rabbit-sidebar-header")) {
+            const headerContainer = document.createElement("div");
+            headerContainer.id = "rabbit-sidebar-header-container";
+
+            const headerBadge = document.createElement("span");
+            headerBadge.id = "rabbit-sidebar-header";
+            headerBadge.textContent = "SKRÓTY";
+
+            headerContainer.appendChild(headerBadge);
+            sidebar.prepend(headerContainer);
+        }
+
+        document.body.appendChild(sidebar);
+        document.body.appendChild(panel);
+
+        const cats = { "NonSort": "NS", "Sortable": "S", "TeamLift": "TL", "MarketPlace": "MP" };
+
+        // Czyścimy przyciski przed ponownym renderem (żeby uniknąć duplikatów)
+        const existingBtns = sidebar.querySelectorAll('.sidebar-btn');
+        existingBtns.forEach(b => b.remove());
+
+        Object.entries(cats).forEach(([key, label]) => {
+            const btn = document.createElement("div");
+            btn.className = "sidebar-btn";
+            btn.style.setProperty('--hover-color', COLORS[key]);
+            btn.textContent = label;
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                key === "MarketPlace" ? showMarketPlace() : showCategory(key);
+            };
+            sidebar.appendChild(btn);
+        });
+    }
+
+    const getFullUrl = (p) => p.startsWith('http') ? p : BASE_URL + p;
+
+    function openPanel() {
+        panel.style.display = 'flex';
+        setTimeout(() => panel.classList.add('active'), 10);
+    }
+
+    function hidePanel() {
+        panel.classList.remove('active');
+        setTimeout(() => { if(!panel.classList.contains('active')) panel.style.display = 'none'; }, 300);
+    }
+
+// --- 1. FUNKCJA DLA KATEGORII GŁÓWNYCH (NonSort, Sortable, TeamLift) ---
+    window.renderRedPhoneFlow = function() {
+    panel.innerHTML = `
+        <div class="panel-header"><span class="title">Wybierz Proces</span><span class="close-x">✕</span></div>
+        <div class="panel-body">
+            <div class="panel-item back-btn" onclick="location.reload()">↩ Anuluj</div>
+            <div class="type-grid">
+                <div class="type-btn ns" onclick="window.renderSealSelection('NS')">NS</div>
+                <div class="type-btn sort" onclick="window.renderSealSelection('Sort')">Sort</div>
+            </div>
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+    openPanel();
+};
+
+window.renderSealSelection = function(type) {
+    panel.innerHTML = `
+        <div class="panel-header"><span class="title">Plomba (${type})</span><span class="close-x">✕</span></div>
+        <div class="panel-body">
+            <div class="panel-item back-btn" onclick="window.renderRedPhoneFlow()">↩ Wstecz</div>
+            <div class="seal-grid">
+                <div class="seal-btn green" onclick="window.location.href='${getFullUrl(RED_PHONE_LINKS[type]['Nienaruszona'])}'">Nienaruszona</div>
+                <div class="seal-btn orange" onclick="window.location.href='${getFullUrl(RED_PHONE_LINKS[type]['Uszkodzona'])}'">Uszkodzona</div>
+                <div class="seal-btn red" onclick="window.location.href='${getFullUrl(RED_PHONE_LINKS[type]['Nieobecna'])}'">Nie jest obecne</div>
+            </div>
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+};
+window.showCategory = function(cat) {
+    const items = MENU[cat] || [];
+    panel.innerHTML = `
+        <div class="panel-header">
+            <span class="title" style="color:${COLORS[cat]}">${cat}</span>
+            <span class="close-x">✕</span>
+        </div>
+        <div class="panel-body">
+            ${items.map(([name, path]) => {
+                if (name === "SEP") return `<div class="panel-separator">${path}</div>`;
+
+                const isRedPhone = name.toLowerCase().includes("redphone");
+
+                let clickAction;
+                if (isRedPhone) {
+                    const type = (cat === "NonSort" || cat === "TeamLift") ? "NS" : "Sort";
+                    clickAction = `renderRedPhoneFlow_Step2('${type}')`;
+                } else {
+                    clickAction = `window.location.href='${getFullUrl(path)}'`;
+                }
+
+                return `<div class="panel-item" onclick="${clickAction}">${name} ${isRedPhone ? '<span class="arrow">❯</span>' : ''}</div>`;
+            }).join('')}
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+    openPanel();
+};
+
+// --- 2. FUNKCJA DLA MARKETPLACE ---
+window.showMarketPlace = function() {
+    const keys = Object.keys(MP_LINKS);
+    panel.innerHTML = `
+        <div class="panel-header">
+            <span class="title" style="color:${COLORS.MarketPlace}">MarketPlace</span>
+            <span class="close-x">✕</span>
+        </div>
+        <div class="panel-body">
+            ${keys.map(name => {
+                const isRedPhone = name.toLowerCase().includes("red phone");
+                // Red Phone w MP zawsze pyta o proces (NS/Sort)
+                const clickAction = isRedPhone
+                    ? `renderRedPhoneFlow()`
+                    : `renderTypeSelection('${name}')`;
+
+                return `<div class="panel-item" onclick="${clickAction}">${name} <span class="arrow">❯</span></div>`;
+            }).join('')}
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+    openPanel();
+};
+
+// --- POMOCNICZA FUNKCJA DLA TYPÓW MP (NIE-RED PHONE) ---
+window.renderTypeSelection = function(reportName) {
+    const links = MP_LINKS[reportName];
+    panel.innerHTML = `
+        <div class="panel-header"><span class="title">${reportName}</span><span class="close-x">✕</span></div>
+        <div class="panel-body">
+            <div class="panel-item back-btn" onclick="window.showMarketPlace()">↩ Wstecz</div>
+            <div class="type-grid">
+                <div class="type-btn ns" onclick="window.location.href='${getFullUrl(links.NS)}'">NS</div>
+                <div class="type-btn sort" onclick="window.location.href='${getFullUrl(links.Sort)}'">Sort</div>
+            </div>
+        </div>`;
+    panel.querySelector(".close-x").onclick = hidePanel;
+};
+const PAGE_CACHE_KEY = 'rh_page_history_cache';
+
+const saveCurrentPageToCache = () => {
+    const currentUrl = window.location.href;
+    if (currentUrl.endsWith('.dev/') || currentUrl.includes('/dashboard')) return;
+
+    let cache = JSON.parse(sessionStorage.getItem(PAGE_CACHE_KEY) || '{}');
+
+    const pageData = {
+        timestamp: Date.now(),
+        fields: {
+            '399': document.getElementById('399')?.value || '',
+            '402': document.getElementById('402')?.value || '',
+            '404': document.getElementById('404')?.value || '',
+            'header': document.querySelector('div.panel_head_box:nth-child(2) > h2:nth-child(1)')?.textContent || ''
+        }
+    };
+
+    cache[currentUrl] = pageData;
+    const keys = Object.keys(cache);
+    if (keys.length > 10) {
+        const oldestKey = keys.sort((a, b) => cache[a].timestamp - cache[b].timestamp)[0];
+        delete cache[oldestKey];
+    }
+
+    sessionStorage.setItem(PAGE_CACHE_KEY, JSON.stringify(cache));
+};
+
+const restorePageFromCache = () => {
+    const currentUrl = window.location.href;
+    const cache = JSON.parse(sessionStorage.getItem(PAGE_CACHE_KEY) || '{}');
+
+
+
+
+};
+
+    function renderTypeSelection(reportName) {
+        panel.innerHTML = `
+            <div class="panel-header"><span class="title">Typ: ${reportName}</span><span class="close-x">✕</span></div>
+            <div class="panel-body">
+                <div class="panel-item back-btn">↩ Wstecz</div>
+                <div class="type-grid">
+                    <div class="type-btn ns" onclick="window.location.href='${getFullUrl(MP_LINKS[reportName].NS)}'">NS</div>
+                    <div class="type-btn sort" onclick="window.location.href='${getFullUrl(MP_LINKS[reportName].Sort)}'">Sort</div>
+                </div>
+            </div>`;
+        panel.querySelector(".close-x").onclick = hidePanel;
+        panel.querySelector(".back-btn").onclick = showMarketPlace;
+    }
+
+    const DEBOUNCE_TIME = 10000;
+    let currentLPN = "";
+
+    const updateDisplay = () => {
+        const total = GM_getValue('rh_count', 0);
+        const ts = GM_getValue('rh_timestamps', []);
+        const now = Date.now();
+        const hourly = ts.filter(t => t > (now - 3600000)).length;
+        const history = GM_getValue('rh_history', []);
+
+        const totalEl = document.getElementById('rh-count-total');
+        const hourEl = document.getElementById('rh-count-hour');
+        const histEl = document.getElementById('rh-history-list');
+
+        if (totalEl) totalEl.innerText = `${hourly}/h~`;
+        if (hourEl) hourEl.innerText = `Wysłane: ${total}~`;
+        if (histEl) {
+
+    const secretPrefix = "aHR0cHM6Ly9ldS1jcmV0ZmMtdG9vbHMtZHViLmR1Yi5wcm94eS5hbWF6b24uY29tL2dyYXZpcy9yZXR1cm5Vbml0Lw==";
+
+    histEl.innerHTML = history.length > 0
+        ? history.map(lpn => {
+
+            const fullUrl = atob(secretPrefix) + lpn + "?selectedLocale=pl_PL";
+
+            return `<a href="${fullUrl}" target="_blank" class="history-item">• ${lpn}</a>`;
+        }).join('')
+        : '<div class="history-item" style="opacity:0.5">Brak danych</div>';
+}
+    };
+
+    const handleIncrement = () => {
+        const now = Date.now();
+        if (now - GM_getValue('rh_last_increment', 0) < DEBOUNCE_TIME) return;
+
+        GM_setValue('rh_last_increment', now);
+        GM_setValue('rh_count', GM_getValue('rh_count', 0) + 1);
+
+        let ts = GM_getValue('rh_timestamps', []);
+        ts.push(now);
+        GM_setValue('rh_timestamps', ts.filter(t => t > (now - 3600000)));
+
+        if (currentLPN) {
+            let hist = GM_getValue('rh_history', []).filter(i => i !== currentLPN);
+            hist.unshift(currentLPN);
+            GM_setValue('rh_history', hist.slice(0, 10));
+            currentLPN = "";
+        }
+        updateDisplay();
+    };
+const lpnCache = new Map();
+
+function setupLPNListener() {
+    const input399 = document.getElementById('399');
+    const loaderEl = document.getElementById('rh-loader');
+
+    const fields = {
+        orderId: document.getElementById('402'),
+        associate: document.getElementById('404')
+    };
+
+    if (!input399) return;
+
+    const _0x4a1 = "aHR0cHM6Ly9ldS1jcmV0ZmMtdG9vbHMtZHViLmR1Yi5wcm94eS5hbWF6b24uY29tL2dldFJldHVyblVuaXREYXRhP2xwbj0=";
+    const _0x4a2 = "JmxvY2FsZT1wbF9QTCZpc0F1dGhvcml6ZWRUb1ZpZXdQcmltYXJ5R3JhZGluZ0RhdGE9dHJ1ZQ==";
+
+    input399.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+
+        const lpn = input399.value.trim();
+        if (!lpn) return;
+
+        currentLPN = lpn;
+
+        // --- SPRAWDZANIE CACHE ---
+        if (lpnCache.has(lpn)) {
+            log(`Pobieranie danych z CACHE dla LPN: ${lpn}`, 'success');
+            fillFields(lpnCache.get(lpn), fields);
+            return;
+        }
+
+        log(`Pobieranie danych z SIECI dla LPN: ${lpn}`, 'info');
+        if (loaderEl) loaderEl.style.display = 'flex';
+
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: atob(_0x4a1) + lpn + atob(_0x4a2),
+            withCredentials: true,
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            onload: (res) => {
+                if (loaderEl) loaderEl.style.display = 'none';
+
+                try {
+                    const data = JSON.parse(res.responseText);
+                    if (!data || !data[0]) return;
+const el408 = document.getElementById('408');
+if (el408) {
+    el408.value = "N/A";
+    el408.dispatchEvent(new Event('input', { bubbles: true }));
+    el408.dispatchEvent(new Event('change', { bubbles: true }));
+    log("Pole 408 ustawione na N/A", "info");
+}
+                    const d = data[0];
+                    const socratesList = d?.socratesActivityDataList || [];
+                    // Ekstrakcja danych
+                    let auditAssociate = null;
+                    let escalatedAssociate = null;
+                    const auditPattern = /audit/i;
+
+                    for (const entry of socratesList) {
+                        if (!auditAssociate && auditPattern.test(entry.sortCode || "")) auditAssociate = entry.associate;
+                        if (!escalatedAssociate && entry.activityStatus === "ESCALATED") escalatedAssociate = entry.associate;
+                        if (auditAssociate && escalatedAssociate) break;
+                    }
+
+                    const result = {
+                        oid: d?.packageAttributes?.actualPackageAttributes?.orderId,
+                        audit: auditAssociate,
+                        escalated: escalatedAssociate,
+                        fallback: d?.socratesLastActivityData?.associate || (socratesList[0]?.associate || "")
+                    };
+                    lpnCache.set(lpn, result);
+
+                    fillFields(result, fields);
+
+                } catch (err) { log("Błąd JSON: " + err, "error"); }
+            },
+            onerror: () => { if (loaderEl) loaderEl.style.display = 'none'; }
+        });
+    });
+}
+
+function fillFields(data, fields) {
+    const headerEl = document.querySelector('div.panel_head_box:nth-child(2) > h2:nth-child(1)');
+    const isAuditPage = headerEl?.textContent.toLowerCase().includes("audyt");
+
+    // Order ID
+    if (data.oid && fields.orderId) {
+        fields.orderId.value = data.oid;
+        fields.orderId.dispatchEvent(new Event('input', { bubbles: true }));
+        fields.orderId.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    // Associate
+    if (fields.associate) {
+        fields.associate.value = isAuditPage ? (data.audit || "") : (data.escalated || data.fallback);
+        fields.associate.dispatchEvent(new Event('input', { bubbles: true }));
+        fields.associate.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+}
+    
+
     const originalSend = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function() {
         this.addEventListener('load', () => {
@@ -1088,7 +1554,7 @@ input[type="submit"]:hover {
         div.innerHTML = `
             <div style="display:flex; align-items:center; gap:8px; font-weight:bold; width:100%">
                 <span style="width:8px; height:8px; background:#00b894; border-radius:50%"></span>
-                <span id="rh-count-total">0/h</span>
+                <span id="rh-count-total">0/h~</span>
                 <button id="rh-reset-btn">Reset</button>
             </div>
             <div id="rh-count-hour" style="font-size:11px; margin: 4px 0 10px 16px">Wysłane: 0</div>
@@ -1132,16 +1598,51 @@ input[type="submit"]:hover {
     document.head.appendChild(faLink);
 
     // Czyszczenie stylów
-    function nukeOriginalStyles() {
-        const links = document.querySelectorAll('link[rel="stylesheet"]');
-        links.forEach(link => {
-            if (link.href.includes('/assets/') && !link.href.includes('font-awesome')) {
-                link.remove();
-            }
-        });
+    // --- POPRAWIONE USUWANIE STYLÓW ---
+    // Optymalizacja czyszczenia stylów
+const nukeOriginalStyles = () => {
+    // Pobieramy tylko te, których jeszcze nie wyłączyliśmy
+    const links = document.querySelectorAll('link[rel="stylesheet"]:not([disabled])');
+    links.forEach(link => {
+        if (link.href && link.href.includes('/assets/') && !link.href.includes('font-awesome')) {
+            link.disabled = true;
+            link.media = 'none';
+        }
+    });
+};
+
+// Optymalizacja czyszczenia nagłówka - wykonaj tylko gdy tekst się zmieni
+let lastCleanedText = "";
+const cleanHeaderTitle = () => {
+    const headerElement = document.querySelector('div.panel_head_box:nth-child(2) > h2:nth-child(1)');
+    if (headerElement && headerElement.textContent !== lastCleanedText) {
+        const cleaned = headerElement.textContent.replace(/^\d{2}-[A-Z]\s+/, '');
+        if (headerElement.textContent !== cleaned) {
+            headerElement.textContent = cleaned;
+            lastCleanedText = cleaned;
+            log(`Oczyszczono nagłówek: ${cleaned}`, 'success');
+        }
     }
+};
+
+// Wydajny obserwator - odpalany tylko gdy zmienia się struktura head lub body
+const fastObserver = new MutationObserver(() => {
     nukeOriginalStyles();
-    new MutationObserver(nukeOriginalStyles).observe(document.head, { childList: true });
+    cleanHeaderTitle();
+});
+
+fastObserver.observe(document.documentElement, { childList: true, subtree: true });
+
+    // Uruchamiamy czyszczenie z lekkim opóźnieniem (setTimeout),
+    // aby pozwolić skryptom walidacyjnym zainicjować się poprawnie.
+    const styleObserver = new MutationObserver((mutations) => {
+        // Używamy requestAnimationFrame dla płynności i braku kolizji z JS
+        requestAnimationFrame(nukeOriginalStyles);
+        cleanHeaderTitle();
+    });
+
+
+    styleObserver.observe(document.documentElement, { childList: true, subtree: true });
 
     const css = `
         :root {
