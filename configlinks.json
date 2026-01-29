@@ -99,19 +99,19 @@
       "Sort": "/result?category_id=576&function_id=242&group_id=896&task_id=5878" 
 
     },
-    "RedPhone": { 
-
-      "NS": "/category?function_id=238", 
-
-      "Sort": "/category?function_id=238" 
-
-    },
 
     "Czysty Marketplace MFN - znalezione na innym/powiązanym koncie": { 
 
       "NS": "/result?category_id=576&function_id=242&group_id=896&task_id=5879", 
 
       "Sort": "/result?category_id=575&function_id=242&group_id=896&task_id=5879" 
+
+    },
+    "RedPhone": { 
+
+      "NS": "/category?function_id=238", 
+
+      "Sort": "/category?function_id=238" 
 
     },
 
